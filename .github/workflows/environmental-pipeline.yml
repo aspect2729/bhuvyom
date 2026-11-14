@@ -1,0 +1,90 @@
+# Persistent Karnataka environmental data updates for Bhuvyom.
+# Requires repository secrets:
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+#   EARTHDATA_TOKEN (optional; for GPM / Earthdata products)
+#
+# Schedule: daily 02:30 UTC (latest + forecast); weekly Monday 03:30 UTC (historical refresh)
+
+name: Environmental pipeline
+
+on:
+  schedule:
+    - cron: "30 2 * * *"      # daily latest + forecast
+    - cron: "30 3 * * 1"      # weekly historical/archive refresh
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "Pipeline phase"
+        required: true
+        default: latest
+        type: choice
+        options:
+          - all
+          - historical
+          - latest
+          - forecast
+          - verify
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Write .env
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}
+        run: |
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_SERVICE_ROLE_KEY"
+          {
+            echo "SUPABASE_URL=$SUPABASE_URL"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY"
+            echo "EARTHDATA_TOKEN=${EARTHDATA_TOKEN:-}"
+            echo "BHUVYOM_DEFAULT_REGION=karnataka"
+            echo "BHUVYOM_LOG_LEVEL=INFO"
+            echo "BHUVYOM_MAX_CONCURRENCY=3"
+          } > .env
+
+      - name: Select phase
+        id: phase
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "phase=${{ inputs.phase }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "30 3 * * 1" ]; then
+            echo "phase=historical" >> "$GITHUB_OUTPUT"
+          else
+            echo "phase=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run pipeline
+        run: |
+          PHASE="${{ steps.phase.outputs.phase }}"
+          if [ "$PHASE" = "latest" ]; then
+            python -m pipeline.run --phase power-daily --power-daily-days 14
+            python -m pipeline.run --phase om-forecast --forecast-days 7
+            python -m pipeline.run --phase verify
+          elif [ "$PHASE" = "historical" ]; then
+            python -m pipeline.run --phase power-monthly --power-monthly-start 2020
+            python -m pipeline.run --phase om-archive --om-archive-days 90
+            python -m pipeline.run --phase verify
+          else
+            python -m pipeline.run --phase "$PHASE"
+          fi

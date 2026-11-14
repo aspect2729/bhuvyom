@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     supabase_service_role_key: Optional[str] = Field(
         default=None, alias="SUPABASE_SERVICE_ROLE_KEY"
     )
+    # Browser/mobile publishable key (sb_publishable_… / legacy anon). Server never needs it for storage.
+    supabase_publishable_key: Optional[str] = Field(
+        default=None, alias="SUPABASE_PUBLISHABLE_KEY"
+    )
     supabase_bucket: str = Field(default="bhuvyom-rasters", alias="SUPABASE_BUCKET")
 
     data_root: Path = Field(default=DEFAULT_DATA_ROOT, alias="BHUVYOM_DATA_ROOT")
