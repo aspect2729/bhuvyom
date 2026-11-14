@@ -1,0 +1,385 @@
+{
+  "schema_version": "1.0",
+  "source_of_truth": "METHODOLOGY_REFERENCE.md (project corpus) + scientific/*.md (decisions & external methods)",
+  "methodologies": [
+    {
+      "id": "obs.modis_lst_qc",
+      "engine": "acquisition",
+      "name": "MODIS LST scaling & QC filtering",
+      "description": "Convert MOD11A1 LST digital numbers to °C and keep only good-quality pixels.",
+      "formula_latex": "\\mathrm{LST}_{^\\circ C} = 0.02\\,\\mathrm{DN} - 273.15,\\quad \\text{keep if } QA_{[0:1]}=00\\ \\lor\\ (QA_{[0:1]}=01 \\land \\epsilon_{LST,[6:7]} \\le 2\\,\\mathrm{K})",
+      "inputs": [
+        "MOD11A1.061 LST_Day_1km, LST_Night_1km, QC_Day, QC_Night"
+      ],
+      "temporal_coverage": "2024-01-01..2024-03-31 acquired",
+      "assumptions": [
+        "QA 00 = good quality; QA 01 with LST error flag ≤ 2 K accepted (built-up pixels are flagged 01 for emissivity uncertainty; strict 00-only removed the entire urban core)",
+        "Per-pixel QC tier is kept in the result (field qc_tier_day)"
+      ],
+      "outputs": [
+        "lst_day",
+        "lst_night"
+      ],
+      "graphs": [
+        "pixel time series",
+        "clear-sky % by date"
+      ],
+      "map_layers": [
+        "LST polygons per MODIS pixel"
+      ],
+      "interpretation": [
+        "Surface skin temperature; never presented as 2 m air temperature"
+      ],
+      "limitations": [
+        "clear-sky bias",
+        "~1 km",
+        "tier-2 pixels carry up to 2 K retrieval error"
+      ],
+      "doc_ref": "MOD11 C6.1 User Guide (Wan 2019)",
+      "corpus_support": "external",
+      "status": "implemented_and_validated",
+      "validation_note": "Strict-tier subset reproduces the original acquisition exactly; values 17.1–44.7 °C; urban core now has 63–91 valid days instead of 0"
+    },
+    {
+      "id": "obs.gpm_imerg_daily",
+      "engine": "acquisition",
+      "name": "GPM IMERG V07 daily precipitation",
+      "description": "OPeNDAP spatial subset of IMERG Final daily precipitation over BBMP.",
+      "formula_latex": "P_{day}\\;[\\mathrm{mm\\,day^{-1}}]\\ \\text{(no transformation)}",
+      "inputs": [
+        "GPM_3IMERGDF.07 precipitation"
+      ],
+      "temporal_coverage": "2024-06-01..2024-10-31 acquired",
+      "assumptions": [
+        "UTC day"
+      ],
+      "outputs": [
+        "precipitation"
+      ],
+      "graphs": [
+        "daily time series"
+      ],
+      "map_layers": [
+        "0.1° precipitation cells"
+      ],
+      "interpretation": [
+        "Satellite–gauge merged estimate, not gauge observations"
+      ],
+      "limitations": [
+        "0.1° cells",
+        "randomError not acquired"
+      ],
+      "doc_ref": "IMERG V07 ATBD (Huffman et al.)",
+      "corpus_support": "external",
+      "status": "implemented_and_validated",
+      "validation_note": "Values non-negative, fill → null"
+    },
+    {
+      "id": "obs.modis_ndvi",
+      "engine": "acquisition",
+      "name": "MODIS NDVI 16-day composites (MOD13Q1)",
+      "description": "NDVI from MOD13Q1.061 250 m composites over the BBMP window.",
+      "formula_latex": "\\mathrm{NDVI}=10^{-4}\\,\\mathrm{DN},\\ \\text{keep if pixel reliability}\\in\\{0,1\\}",
+      "inputs": [
+        "MOD13Q1.061 250m 16 days NDVI, pixel reliability"
+      ],
+      "temporal_coverage": "2023-12-19..2024-03-21 (7 composites)",
+      "assumptions": [
+        "Maximum-value composite represents the 16-day period"
+      ],
+      "outputs": [
+        "ndvi"
+      ],
+      "graphs": [
+        "pixel composite series"
+      ],
+      "map_layers": [
+        "250 m NDVI polygons"
+      ],
+      "interpretation": [
+        "Vegetation greenness index, dimensionless"
+      ],
+      "limitations": [
+        "16-day composites",
+        "mixed urban pixels"
+      ],
+      "doc_ref": "MOD13 User Guide (Didan 2015)",
+      "corpus_support": "external",
+      "status": "implemented_and_validated",
+      "validation_note": "Range −0.19–0.87, 99.98% valid; aggregated to 1 km by exact 4×4 nesting for LST association"
+    },
+    {
+      "id": "analysis.trend_mk_sen",
+      "engine": "analysis",
+      "name": "Mann–Kendall trend test + Sen's slope (with r1/TFPW and BH-FDR)",
+      "description": "Monotonic trend detection on annual means per POWER cell; magnitude by Sen's slope with ordered-rank 95% CI; lag-1 screening with TFPW; Benjamini–Hochberg across cells.",
+      "formula_latex": "S=\\sum_{k<j}\\operatorname{sgn}(x_j-x_k),\\; \\operatorname{Var}(S)=\\tfrac{n(n-1)(2n+5)-\\sum_p t_p(t_p-1)(2t_p+5)}{18},\\; Z=\\tfrac{S-\\operatorname{sgn}(S)}{\\sqrt{\\operatorname{Var}(S)}},\\; Q=\\operatorname{median}\\tfrac{x_j-x_k}{t_j-t_k}",
+      "inputs": [
+        "NASA POWER monthly → annual means (≥10 months)"
+      ],
+      "temporal_coverage": "≥10 years (MIN_YEARS)",
+      "spatial": "per 0.5°×0.625° cell",
+      "assumptions": [
+        "monotonic trend",
+        "independence after TFPW when r1 significant"
+      ],
+      "thresholds": {
+        "alpha": 0.05,
+        "min_years": 10,
+        "min_months_per_year": 10,
+        "fdr_q": 0.05
+      },
+      "outputs": [
+        "slope_per_decade",
+        "ci_low/high",
+        "p_value",
+        "p_bh",
+        "S",
+        "Var(S)",
+        "Z",
+        "r1"
+      ],
+      "graphs": [
+        "annual series + Sen line",
+        "slope ± CI"
+      ],
+      "map_layers": [
+        "slope (diverging)",
+        "significance outline"
+      ],
+      "interpretation": [
+        "Significant only if BH-adjusted p ≤ 0.05",
+        "Significance ≠ practical importance",
+        "Non-significance ≠ no change"
+      ],
+      "limitations": [
+        "spatial dependence between cells",
+        "reanalysis input"
+      ],
+      "doc_ref": "METHODOLOGY_REFERENCE.md §5–§8, §11.3",
+      "corpus_support": "P1, P2, P3 (MK/Sen); §7.4 CI and BH external",
+      "status": "implemented_and_validated",
+      "validation_note": "12 unit tests incl. scipy kendalltau/theilslopes agreement"
+    },
+    {
+      "id": "analysis.lst_composite",
+      "engine": "analysis",
+      "name": "Clear-sky LST composite, spatial contrast, elevation association",
+      "description": "Per-pixel mean of QC-good LST; anomaly vs area mean; Spearman ρ with SRTM elevation (no p-value).",
+      "formula_latex": "\\overline{LST}(p)=\\tfrac{1}{n_p}\\sum_t LST(p,t),\\; \\Delta(p)=\\overline{LST}(p)-\\langle\\overline{LST}\\rangle,\\; \\rho_s=\\operatorname{corr}(\\operatorname{rank} z,\\operatorname{rank}\\overline{LST})",
+      "inputs": [
+        "MOD11A1 LST",
+        "SRTM elevation aggregated to MODIS pixels"
+      ],
+      "thresholds": {
+        "min_clear_days": 10
+      },
+      "outputs": [
+        "mean_lst_day",
+        "mean_lst_night",
+        "day_lst_anomaly",
+        "n_clear_days",
+        "elevation_mean"
+      ],
+      "graphs": [
+        "anomaly distribution"
+      ],
+      "map_layers": [
+        "composite",
+        "anomaly"
+      ],
+      "interpretation": [
+        "Association ≠ causation",
+        "No hotspot threshold defined in methodology → no hotspot labels"
+      ],
+      "limitations": [
+        "clear-sky only",
+        "no rural reference → not SUHI intensity"
+      ],
+      "doc_ref": "METHODOLOGY_REFERENCE.md §10, §12 (caveats)",
+      "corpus_support": "engineering + caveats from corpus",
+      "status": "implemented_not_fully_validated"
+    },
+    {
+      "id": "analysis.change_point",
+      "engine": "analysis",
+      "name": "Change-point / homogeneity tests (Pettitt, SNHT, PELT)",
+      "description": "Detect abrupt shifts.",
+      "doc_ref": "METHODOLOGY_REFERENCE.md §9",
+      "corpus_support": "P2, P4 (equations not printed for Pettitt)",
+      "status": "not_implemented",
+      "missing_specification": "Pettitt statistic and significance approximation not given in corpus (§9.2 'Additional research needed'); no CI for change location."
+    },
+    {
+      "id": "analysis.spatial_autocorrelation",
+      "engine": "analysis",
+      "name": "Global Moran's I",
+      "doc_ref": "METHODOLOGY_REFERENCE.md §10",
+      "corpus_support": "P5 (limited)",
+      "status": "not_implemented",
+      "missing_specification": "Spatial weights definition for gridded fields not specified; field-significance method for trend maps is a stated gap (§11)."
+    },
+    {
+      "id": "prediction.monthly_direct_multi_horizon",
+      "engine": "prediction",
+      "name": "Monthly temperature & precipitation forecast (1–12 months)",
+      "description": "Six candidates (climatology, seasonal naive, damped anomaly persistence, climatology+trend, pooled ridge, pooled gradient boosting) compared by rolling-origin validation; per-horizon selection on calibration MAE; empirical residual-quantile intervals.",
+      "formula_latex": "\\hat y_{o+h}=\\bar y_{m(o+h)}+\\phi^h a_o \\;\\text{(damped persistence)},\\quad PI_{1-\\alpha}=\\hat y + [q_{\\alpha/2}(r_h), q_{1-\\alpha/2}(r_h)]",
+      "inputs": [
+        "NASA POWER monthly T2M, PRECTOTCORR 1981–2025, 25 cells"
+      ],
+      "temporal_coverage": "≥30 years monthly",
+      "spatial": "0.5°×0.625° cells",
+      "thresholds": {
+        "horizons": "1–12 months",
+        "skill_threshold": 0.02
+      },
+      "outputs": [
+        "forecast",
+        "pi80",
+        "pi95",
+        "validation metrics"
+      ],
+      "graphs": [
+        "observed + forecast + intervals",
+        "MAE by horizon vs baselines",
+        "coverage"
+      ],
+      "map_layers": [
+        "forecast field per month"
+      ],
+      "interpretation": [
+        "Skill reported against climatology on held-out test data",
+        "No skill → say so"
+      ],
+      "limitations": [
+        "city-scale cells",
+        "not a weather forecast",
+        "not a climate projection"
+      ],
+      "doc_ref": "scientific/MODEL_SELECTION.md, VALIDATION_PROTOCOLS.md",
+      "corpus_support": "external (FPP3; Tashman 2000; Lei et al. 2018) — corpus has no forecasting methods",
+      "status": "implemented_and_validated"
+    },
+    {
+      "id": "prediction.short_term_daily",
+      "engine": "prediction",
+      "name": "Short-term (hours–days) forecasting",
+      "status": "not_implemented",
+      "missing_specification": "Requires NWP forcing or multi-year sub-daily records; only one monsoon of GPM daily acquired."
+    },
+    {
+      "id": "prediction.long_term_projection",
+      "engine": "prediction",
+      "name": "Multi-year / decadal projection",
+      "status": "not_implemented",
+      "missing_specification": "Requires downscaled CMIP6 scenario projections; statistical extrapolation refused by design."
+    },
+    {
+      "id": "simulation.scs_cn_runoff",
+      "engine": "simulation",
+      "name": "SCS Curve Number rainfall–runoff scenario",
+      "description": "Daily direct runoff from observed GPM rainfall for baseline vs scenario impervious fraction; parameter ensemble.",
+      "formula_latex": "S=\\tfrac{25400}{CN}-254,\\; I_a=\\lambda S,\\; Q=\\tfrac{(P-I_a)^2}{P-I_a+S}\\,(P>I_a),\\; CN=f\\cdot 98+(1-f)CN_p",
+      "inputs": [
+        "GPM IMERG daily (mm/day)",
+        "scenario impervious fractions",
+        "hydrologic soil group"
+      ],
+      "thresholds": {
+        "lambda": [
+          0.05,
+          0.2
+        ],
+        "CN_pervious": {
+          "B": 69,
+          "C": 79,
+          "D": 84
+        }
+      },
+      "outputs": [
+        "daily runoff baseline/scenario",
+        "totals",
+        "difference",
+        "ensemble range"
+      ],
+      "graphs": [
+        "rainfall vs runoff series",
+        "scenario difference"
+      ],
+      "map_layers": [
+        "total runoff difference"
+      ],
+      "interpretation": [
+        "Hypothetical scenario, not a flood prediction",
+        "Not validated against streamflow"
+      ],
+      "limitations": [
+        "no routing",
+        "AMC II",
+        "daily events"
+      ],
+      "doc_ref": "USDA-NRCS NEH 630 Ch.10; TR-55 (1986); Hawkins et al. 2002",
+      "corpus_support": "external — corpus §13.1 lists runoff closures as absent",
+      "status": "implemented_not_fully_validated"
+    },
+    {
+      "id": "prediction.climate_projection_cmip6",
+      "engine": "prediction",
+      "name": "Climate projections 2030–2100 (NASA NEX-GDDP-CMIP6)",
+      "description": "Summary of bias-corrected, downscaled CMIP6 runs for the Bengaluru 0.25° cell under SSP1-2.6/2-4.5/5-8.5: 20-year window means minus each model's 1995–2014 mean; multi-model median and min–max.",
+      "formula_latex": "\\Delta_{m}(w)=\\overline{x}_{m,w}-\\overline{x}_{m,1995\\text{–}2014},\\quad \\widetilde{\\Delta}(w)=\\operatorname{median}_m \\Delta_m(w)",
+      "inputs": [
+        "NEX-GDDP-CMIP6 tas, tasmax, pr, hurs, sfcWind (5 models)"
+      ],
+      "thresholds": {
+        "min_years_in_window": 15,
+        "min_models": 3,
+        "hot_day_C": 35,
+        "heavy_rain_mm": 64.5
+      },
+      "outputs": [
+        "window values & deltas",
+        "trajectories"
+      ],
+      "interpretation": [
+        "Projections conditional on the pathway, not forecasts",
+        "Range = model spread of a small ensemble"
+      ],
+      "limitations": [
+        "one 0.25° cell",
+        "no urban effects"
+      ],
+      "doc_ref": "Thrasher et al. 2022 Sci Data 9:262; IPCC AR6 WG1 conventions",
+      "corpus_support": "external",
+      "status": "implemented_not_fully_validated",
+      "validation_note": "Summary logic unit-tested; data acquisition must be run (scripts/acquire_cmip6.py)"
+    },
+    {
+      "id": "simulation.lab_event_runoff",
+      "engine": "simulation",
+      "name": "Simulation Lab — single-storm SCS-CN runoff",
+      "description": "Event SCS-CN with storm depth = intensity × duration, spatial footprint from the wettest observed GPM day; permeable share → CN.",
+      "formula_latex": "P_c=I\\,D\\,\\tfrac{P^{obs}_c}{\\overline{P^{obs}}},\\; Q_c=\\tfrac{(P_c-\\lambda S)^2}{P_c-\\lambda S+S}",
+      "inputs": [
+        "GPM IMERG daily (footprint)",
+        "user storm & permeable share"
+      ],
+      "outputs": [
+        "runoff depth per cell",
+        "coefficient",
+        "volume over BBMP"
+      ],
+      "interpretation": [
+        "Hypothetical, not a flood forecast"
+      ],
+      "limitations": [
+        "no drains/routing",
+        "assumed today permeable 40%"
+      ],
+      "doc_ref": "USDA-NRCS NEH-630 Ch.10",
+      "corpus_support": "external",
+      "status": "implemented_not_fully_validated"
+    }
+  ]
+}

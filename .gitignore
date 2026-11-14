@@ -1,0 +1,44 @@
+# Dependencies / envs
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.expo/
+dist/
+web-build/
+*.log
+npm-debug.*
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Backend data caches (large, regenerable)
+backend/data/raw/
+backend/data/processed/
+backend/data/simulation_inputs/
+backend/data/cache/
+backend/data/object_store/
+backend/raw/
+backend/**/*.partial
+
+# Local logs / archives / verify blobs
+logs/
+_verify_bundle.tgz
+_archive_web_v1/
+_archive_trend_v1/
+_incoming/
+
+# Expo / mobile
+mobile/.expo/
+mobile/dist/
+expo-env.d.ts

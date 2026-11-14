@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+data/raw/**
+data/processed/**
+data/simulation_inputs/**
+data/cache/**
+data/object_store/**
+!data/boundaries/
+!data/boundaries/**
+!data/fixtures/
+!data/fixtures/.gitkeep
+*.partial
+.DS_Store
