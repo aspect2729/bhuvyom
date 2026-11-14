@@ -1,0 +1,9 @@
+/* Self-hosted fonts (SIL Open Font License — see assets/fonts/OFL-*.txt).
+   Jura  = display / headings / eyebrows / numbers (weights 300, 400, 500)
+   Poppins = body, UI, buttons (300, 400, 500)
+   CDN alternative: https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500&family=Poppins:wght@300;400;500&display=swap */
+@font-face { font-family: "Jura"; src: url("../assets/fonts/Jura-Variable.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../assets/fonts/Poppins-Light.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../assets/fonts/Poppins-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Poppins"; src: url("../assets/fonts/Poppins-Medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+html { scroll-behavior: smooth; }
