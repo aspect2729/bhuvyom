@@ -1,0 +1,157 @@
+[
+ {
+  "name": "Bengaluru",
+  "lat": 12.97,
+  "lon": 77.59
+ },
+ {
+  "name": "Mysuru",
+  "lat": 12.3,
+  "lon": 76.64
+ },
+ {
+  "name": "Mangaluru",
+  "lat": 12.87,
+  "lon": 74.84
+ },
+ {
+  "name": "Hubballi",
+  "lat": 15.36,
+  "lon": 75.12
+ },
+ {
+  "name": "Belagavi",
+  "lat": 15.85,
+  "lon": 74.5
+ },
+ {
+  "name": "Kalaburagi",
+  "lat": 17.33,
+  "lon": 76.83
+ },
+ {
+  "name": "Ballari",
+  "lat": 15.14,
+  "lon": 76.92
+ },
+ {
+  "name": "Vijayapura",
+  "lat": 16.83,
+  "lon": 75.71
+ },
+ {
+  "name": "Shivamogga",
+  "lat": 13.93,
+  "lon": 75.57
+ },
+ {
+  "name": "Davanagere",
+  "lat": 14.46,
+  "lon": 75.92
+ },
+ {
+  "name": "Tumakuru",
+  "lat": 13.34,
+  "lon": 77.1
+ },
+ {
+  "name": "Udupi",
+  "lat": 13.34,
+  "lon": 74.75
+ },
+ {
+  "name": "Karwar",
+  "lat": 14.81,
+  "lon": 74.13
+ },
+ {
+  "name": "Hassan",
+  "lat": 13,
+  "lon": 76.1
+ },
+ {
+  "name": "Chikkamagaluru",
+  "lat": 13.32,
+  "lon": 75.77
+ },
+ {
+  "name": "Madikeri",
+  "lat": 12.42,
+  "lon": 75.74
+ },
+ {
+  "name": "Raichur",
+  "lat": 16.2,
+  "lon": 77.36
+ },
+ {
+  "name": "Bidar",
+  "lat": 17.91,
+  "lon": 77.52
+ },
+ {
+  "name": "Hosapete",
+  "lat": 15.27,
+  "lon": 76.39
+ },
+ {
+  "name": "Chitradurga",
+  "lat": 14.23,
+  "lon": 76.4
+ },
+ {
+  "name": "Kolar",
+  "lat": 13.14,
+  "lon": 78.13
+ },
+ {
+  "name": "Mandya",
+  "lat": 12.52,
+  "lon": 76.9
+ },
+ {
+  "name": "Bagalkot",
+  "lat": 16.18,
+  "lon": 75.7
+ },
+ {
+  "name": "Gadag",
+  "lat": 15.43,
+  "lon": 75.63
+ },
+ {
+  "name": "Haveri",
+  "lat": 14.79,
+  "lon": 75.4
+ },
+ {
+  "name": "Sirsi",
+  "lat": 14.62,
+  "lon": 74.84
+ },
+ {
+  "name": "Chamarajanagar",
+  "lat": 11.92,
+  "lon": 76.94
+ },
+ {
+  "name": "Yadgir",
+  "lat": 16.77,
+  "lon": 77.14
+ },
+ {
+  "name": "Koppal",
+  "lat": 15.35,
+  "lon": 76.15
+ },
+ {
+  "name": "Sakleshpur",
+  "lat": 12.94,
+  "lon": 75.78
+ },
+ {
+  "name": "Agumbe",
+  "lat": 13.5,
+  "lon": 75.09
+ }
+]
