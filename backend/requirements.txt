@@ -32,6 +32,7 @@ earthaccess>=0.10.0
 
 # Optional Supabase (local storage used when unset)
 supabase>=2.4.0
+psycopg[binary]>=3.2,<4  # direct, TLS PostgreSQL ingestion/audit of existing Supabase tables
 
 # Tests
 pytest>=8.0

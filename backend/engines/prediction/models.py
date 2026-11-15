@@ -53,14 +53,20 @@ def anomalies(cd: CellData, clim: np.ndarray) -> np.ndarray:
 def features(cd: CellData, a: np.ndarray, o: int, h: int) -> list[float]:
     tgt = o + h
     mt = (cd.month[o] + h) % 12
-    return [a[o], a[o - 1], a[o - 2], a[tgt - 12], np.nanmean(a[o - 11 : o + 1]),
+    seasonal = tgt - 12 * int(np.ceil(h / 12))
+    recent = a[o - 11 : o + 1]
+    mean = float(np.mean(recent[np.isfinite(recent)])) if np.isfinite(recent).any() else np.nan
+    return [a[o], a[o - 1], a[o - 2], a[seasonal], mean,
             np.sin(2 * np.pi * mt / 12), np.cos(2 * np.pi * mt / 12), cd.t[o] + h / 120.0, cd.lat, cd.lon]
 
 
 class FittedSet:
     """All candidate models fitted with cutoff c, for every cell and horizon."""
 
-    def __init__(self, cells: list[CellData], c: int, with_ml: bool = True):
+    def __init__(self, cells: list[CellData], c: int, with_ml: bool = True, horizons=None):
+        if c < 24 or any(c >= cd.n for cd in cells):
+            raise ValueError("Fitting cutoff must be within at least 25 observed months")
+        horizons = tuple(horizons or range(1, MAX_H + 1))
         self.c, self.cells = c, cells
         self.clim = [climatology(cd, c) for cd in cells]
         self.anom = [anomalies(cd, cl) for cd, cl in zip(cells, self.clim)]
@@ -68,19 +74,24 @@ class FittedSet:
         for cd, a in zip(cells, self.anom):
             aa = a[: c + 1]
             ok = np.isfinite(aa[1:]) & np.isfinite(aa[:-1])
-            self.phi.append(float(np.corrcoef(aa[1:][ok], aa[:-1][ok])[0, 1]) if ok.sum() > 24 else 0.0)
+            usable = ok.sum() > 24 and np.std(aa[1:][ok]) > 0 and np.std(aa[:-1][ok]) > 0
+            self.phi.append(float(np.clip(np.corrcoef(aa[1:][ok], aa[:-1][ok])[0, 1], -1, 1)) if usable else 0.0)
             okt = np.isfinite(aa)
-            beta, alpha = np.polyfit(cd.t[: c + 1][okt], aa[okt], 1)
+            beta, alpha = np.polyfit(cd.t[: c + 1][okt], aa[okt], 1) if okt.sum() >= 2 else (0.0, 0.0)
             self.trend.append((alpha, beta))
         self.ml: dict[tuple[str, int], object] = {}
         if with_ml:
-            for h in range(1, MAX_H + 1):
+            for h in horizons:
                 X, Y = [], []
                 for cd, a in zip(cells, self.anom):
                     for o in range(12, c - h + 1):
                         X.append(features(cd, a, o, h)); Y.append(a[o + h])
                 X, Y = np.asarray(X), np.asarray(Y)
+                if not X.size:
+                    continue
                 ok = np.all(np.isfinite(X), 1) & np.isfinite(Y)
+                if ok.sum() < 24:
+                    continue
                 self.ml[("ridge_pooled", h)] = make_pipeline(StandardScaler(), Ridge(alpha=1.0)).fit(X[ok], Y[ok])
                 self.ml[("gbm_pooled", h)] = HistGradientBoostingRegressor(max_iter=120, learning_rate=0.05, max_leaf_nodes=15, min_samples_leaf=40, random_state=0).fit(X[ok], Y[ok])
 
@@ -90,14 +101,14 @@ class FittedSet:
         if model == "climatology":
             return clim[mt]
         if model == "seasonal_naive":
-            return cd.y[o + h - 12]
+            return cd.y[o + h - 12 * int(np.ceil(h / 12))]
         if model == "damped_persistence":
             return clim[mt] + (self.phi[k] ** h) * a[o]
         if model == "clim_trend":
             al, be = self.trend[k]
             return clim[mt] + al + be * (cd.t[o] + h / 120.0)
         x = np.asarray([features(cd, a, o, h)])
-        if not np.all(np.isfinite(x)):
+        if not np.all(np.isfinite(x)) or (model, h) not in self.ml:
             return np.nan
         return clim[mt] + float(self.ml[(model, h)].predict(x)[0])
 
@@ -107,7 +118,7 @@ class FittedSet:
             X = np.asarray([features(cd, a, o, h) for o in origins])
             out = np.full(len(origins), np.nan)
             ok = np.all(np.isfinite(X), 1)
-            if ok.any():
+            if ok.any() and (model, h) in self.ml:
                 out[ok] = self.ml[(model, h)].predict(X[ok])
             mts = (cd.month[np.asarray(origins)] + h) % 12
             return clim[mts] + out

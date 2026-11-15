@@ -1,4 +1,5 @@
 import type { EngineResult, Product } from '../lib/types'
+import { Link } from 'react-router-dom'
 import { Panel, TypeBadge } from './Panel'
 
 const ENGINE_LABEL: Record<string, string> = { acquisition: 'Observations', analysis: 'Analysis', prediction: 'Prediction', simulation: 'Simulation' }
@@ -7,6 +8,7 @@ export function ProductPicker({ products, active, onPick }: { products: Product[
   const groups = ['acquisition', 'analysis', 'prediction', 'simulation']
   return (
     <Panel title="Data & engines">
+      <Link to="/prediction" className="mb-3 block rounded-lg border border-cyan-400/30 px-3 py-2 text-xs text-cyan-200">Prediction performance &amp; validation →</Link>
       <div className="space-y-3">
         {groups.map((g) => (
           <div key={g}>

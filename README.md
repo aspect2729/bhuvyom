@@ -1,5 +1,15 @@
 # NASA POWER — Bengaluru Environmental Map (Phase 1)
 
+## Prediction Engine
+
+The active monthly engine and its model-performance dashboard are in `backend/`
+and `web/`. Read [the scientific workflow](scientific/PREDICTION_WORKFLOW.md) for
+acquisition, training, one-time test evaluation, promotion and interval audit
+commands. Run the backend on port 8001, then `npm run dev -- --port 5174` from
+`web/` and open `/prediction`. Metrics require real acquired observations and
+completed experiment artifacts; no demo accuracy values are supplied.
+
+
 Interactive geospatial map of Bengaluru using NASA POWER daily data.  
 Monorepo: `server/` (FastAPI) + `web/` (Vite/React — frontend comes in later steps).
 

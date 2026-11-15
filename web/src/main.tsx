@@ -7,6 +7,7 @@ import Home from './pages/Home'
 const Lab = lazy(() => import('./pages/Lab'))
 const Future = lazy(() => import('./pages/Future'))
 const Explore = lazy(() => import('./explore/ExploreApp'))
+const Prediction = lazy(() => import('./pages/Prediction'))
 
 function ScrollManager() {
   const { pathname, hash } = useLocation()
@@ -17,7 +18,7 @@ function ScrollManager() {
   return null
 }
 
-const TITLES: Record<string, string> = { '/': 'Bengaluru From Orbit', '/lab': 'Simulation Lab — Bengaluru From Orbit', '/future': 'Future Earth — Bengaluru From Orbit', '/explore': 'Explorer — Bengaluru From Orbit' }
+const TITLES: Record<string, string> = { '/prediction': 'Prediction Engine — Bengaluru From Orbit', '/': 'Bengaluru From Orbit', '/lab': 'Simulation Lab — Bengaluru From Orbit', '/future': 'Future Earth — Bengaluru From Orbit', '/explore': 'Explorer — Bengaluru From Orbit' }
 function Title() { const { pathname } = useLocation(); useEffect(() => { document.title = TITLES[pathname] ?? TITLES['/'] }, [pathname]); return null }
 
 createRoot(document.getElementById('root')!).render(
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<Home />} />
           <Route path="/lab" element={<Lab />} />
           <Route path="/future" element={<Future />} />
+          <Route path="/prediction" element={<Prediction />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="*" element={<Home />} />
         </Routes>

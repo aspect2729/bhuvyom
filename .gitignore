@@ -27,6 +27,8 @@ backend/data/raw/
 backend/data/processed/
 backend/data/simulation_inputs/
 backend/data/cache/
+backend/data/prediction_experiments/
+backend/data/audits/
 backend/data/object_store/
 backend/raw/
 backend/**/*.partial

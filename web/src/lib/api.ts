@@ -6,9 +6,10 @@ export class EngineError extends Error {
 }
 
 /** Same-origin '/api' (Vite proxies it to the FastAPI backend on :8001). */
-export async function getJson<T>(path: string): Promise<T> {
+export async function getJson<T>(path: string, options?: RequestInit): Promise<T> {
   let res: Response
-  try { res = await fetch(path) } catch {
+  try { res = await fetch(path, options) } catch (error) {
+    if (options?.signal?.aborted) throw error
     throw new EngineError({ error: 'server_unreachable', reason: 'The BhuVyom API is not running. Start it: cd backend && uvicorn main:app --reload --port 8001' })
   }
   const body = await res.json().catch(() => null)

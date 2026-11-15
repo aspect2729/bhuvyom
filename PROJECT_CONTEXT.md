@@ -3,6 +3,39 @@
 **BhuVyom** — Bengaluru environmental intelligence platform, NASA Space Apps ("Be An Earth System Trend Detective!").
 Five independent engines + a shared scientific knowledge base. Prediction Engine is the primary scientific capability.
 
+## Supabase audit update (2026-11-15)
+Later update: existing monthly predictions were imported into Supabase after
+explicit approval. See `scientific/SUPABASE_PREDICTION_IMPORT.md` for verified
+counts and mapping. The earlier empty prediction-table inventory below is
+historical; dashboard/training still use local artifacts. Bulk observation
+ingestion remains paused for storage capacity.
+
+Read `scientific/SUPABASE_PREDICTION_AUDIT.md` before new prediction work. Live
+Supabase access was verified with explicit read-only transactions. It contains
+93,565 observation-table rows, including 55,440 external forecasts that must not
+be training targets. NASA history is short daily/once-daily coverage; hourly
+product metadata does not mean hourly samples were acquired. Existing ML tables
+and private bucket are present but empty. The current monthly engine still uses
+local artifacts and does not satisfy Supabase-authoritative training requirements.
+No new ingestion, training, schema changes or deployment occurred in this audit.
+The report proposes a NASA-only January 2020 pilot and later 2016-2025 expansion;
+Ingestion was subsequently approved and partially completed. It is now paused
+for storage capacity review: see `scientific/NASA_HISTORY_INGESTION.md`.
+Research access records: `scientific/references/REFERENCE_INDEX.md` and
+`SOURCE_ACCESS_LOG.md`. Credentials never belong in this file.
+
+## Prediction_engine branch update (2026-11-15)
+Read `scientific/PREDICTION_WORKFLOW.md` for the current engine. `/prediction` is
+its React performance dashboard. `workflow.py` reuses `models.py`; records and
+artifacts are append-only under the configured data root. NASA monthly history
+at the Bengaluru representative cell is acquired through Sep 2026. Current
+validation targets are 2017–2021, calibration 2022–2025, and the fixed-origin
+fresh point test uses Jan–Sep 2026. One cell and one pair per available test
+horizon do not establish geographical skill. The first interval timing failure
+is preserved and suppressed; an interval repair is labelled retrospective.
+Do not reopen exposed tests, promote by test scores, or claim vintage-verified
+operational forecasts. See the scientific document before changing this protocol.
+
 ## Start here
 * `scientific/` — permanent knowledge base: SCIENTIFIC_FOUNDATION, MODEL_SELECTION, VALIDATION_PROTOCOLS,
   EQUATIONS_AND_FORMULAS, ASSUMPTIONS_AND_LIMITATIONS, REFERENCES, DATA_CONTRACT, METHODOLOGY_REGISTRY(.md/.json), AUDIT_AND_ROADMAP.

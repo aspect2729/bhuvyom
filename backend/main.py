@@ -14,7 +14,7 @@ if str(BACKEND_ROOT) not in sys.path:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import acquisition, datasets, engines, future, lab, simulation, site
+from api import acquisition, datasets, engines, future, lab, prediction, simulation, site
 from config.settings import get_settings
 
 settings = get_settings()
@@ -49,6 +49,7 @@ app.include_router(engines.router)
 app.include_router(site.router)
 app.include_router(lab.router)
 app.include_router(future.router)
+app.include_router(prediction.router)
 
 
 @app.get("/api/health")

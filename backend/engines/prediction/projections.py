@@ -61,9 +61,16 @@ def _load() -> dict:
         data[r["var"]][r["model"]][r["scenario"]][r["year"]] = r
     cell = None
     for f in RAW.rglob("*.csv"):
-        rows = list(csv.reader(f.open()))
-        if len(rows) > 1:
-            cell = {"lat": float(rows[1][1]), "lon": float(rows[1][2])}
+        with f.open(encoding='utf-8-sig') as stream:
+            rows = csv.reader(stream)
+            header, row = next(rows, []), next(rows, [])
+        names = [name.split('[')[0].strip().lower() for name in header]
+        try:
+            lat, lon = float(row[names.index('latitude')]), float(row[names.index('longitude')])
+        except (ValueError, IndexError):
+            continue
+        if -90 <= lat <= 90 and -180 <= lon <= 180:
+            cell = {"lat": lat, "lon": lon}
             break
     return {"data": data, "cell": cell}
 

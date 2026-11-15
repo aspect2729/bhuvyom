@@ -25,7 +25,7 @@ const LAYERS: { key: string; name: string; note: string; source: string; icon: s
   { key: 'cloud', name: 'Cloud cover', note: 'Share of the sky covered by cloud.', source: 'NASA POWER · CLOUD_AMT', icon: ICON.cloud, grad: 'linear-gradient(135deg,#DDE6F2,#8EA2C0)', link: '/explore' },
   { key: 'next', name: 'Your next layer', note: 'The pipeline is modular — MODIS vegetation (NDVI, 250 m) is already in. Open it in the explorer app.', source: 'Explorer app', icon: ICON.plus, grad: 'linear-gradient(135deg,#3A3A42,#1A1A1F)', link: '/explore' },
 ]
-const NAV = [{ label: 'Explorer', to: '#explorer' }, { label: 'Simulation Lab', to: '/lab' }, { label: 'Future Earth', to: '/future' }, { label: 'Data', to: '#data' }]
+const NAV = [{ label: 'Explorer', to: '#explorer' }, { label: 'Simulation Lab', to: '/lab' }, { label: 'Future Earth', to: '/future' }, { label: 'Prediction Engine', to: '/prediction' }, { label: 'Data', to: '#data' }]
 
 function useData() {
   const [site, setSite] = useState<SiteSummary | null>(null)

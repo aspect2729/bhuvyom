@@ -223,10 +223,10 @@
       "id": "prediction.monthly_direct_multi_horizon",
       "engine": "prediction",
       "name": "Monthly temperature & precipitation forecast (1–12 months)",
-      "description": "Six candidates (climatology, seasonal naive, damped anomaly persistence, climatology+trend, pooled ridge, pooled gradient boosting) compared by rolling-origin validation; per-horizon selection on calibration MAE; empirical residual-quantile intervals.",
+      "description": "Existing six monthly candidates with immutable prediction/evaluation records, target-disjoint walk-forward selection, separate interval calibration, lagged inputs, guarded promotion and a fixed-origin fresh test after legacy exposure through 2025.",
       "formula_latex": "\\hat y_{o+h}=\\bar y_{m(o+h)}+\\phi^h a_o \\;\\text{(damped persistence)},\\quad PI_{1-\\alpha}=\\hat y + [q_{\\alpha/2}(r_h), q_{1-\\alpha/2}(r_h)]",
       "inputs": [
-        "NASA POWER monthly T2M, PRECTOTCORR 1981–2025, 25 cells"
+        "Acquired NASA POWER monthly T2M and PRECTOTCORR; actual cells and periods recorded per experiment"
       ],
       "temporal_coverage": "≥30 years monthly",
       "spatial": "0.5°×0.625° cells",
@@ -238,28 +238,37 @@
         "forecast",
         "pi80",
         "pi95",
-        "validation metrics"
+        "MAE/RMSE/bias/R²",
+        "matched errors",
+        "version and promotion history",
+        "interval timing audit"
       ],
       "graphs": [
-        "observed + forecast + intervals",
-        "MAE by horizon vs baselines",
-        "coverage"
+        "actual versus saved prediction",
+        "MAE/RMSE by horizon",
+        "error histogram and temporal errors",
+        "season/month/year/condition comparisons",
+        "interval coverage and pinball loss"
       ],
       "map_layers": [
-        "forecast field per month"
+        "forecast field per month",
+        "native-cell MAE and bias with n≥24",
+        "interval width where interval n≥24"
       ],
       "interpretation": [
-        "Skill reported against climatology on held-out test data",
-        "No skill → say so"
+        "Selection and promotion use validation only; no regression accuracy percentage",
+        "Independent point test and retrospective interval repair are explicitly distinct"
       ],
       "limitations": [
         "city-scale cells",
         "not a weather forecast",
         "not a climate projection"
       ],
-      "doc_ref": "scientific/MODEL_SELECTION.md, VALIDATION_PROTOCOLS.md",
+      "doc_ref": "scientific/PREDICTION_WORKFLOW.md",
       "corpus_support": "external (FPP3; Tashman 2000; Lei et al. 2018) — corpus has no forecasting methods",
-      "status": "implemented_and_validated"
+      "status": "implemented_not_fully_validated",
+      "version": "2.0.0",
+      "validation_note": "Actual NASA data evaluated; one acquired coarse city cell and nine independent point pairs in 2026. Invalid first-archive interval timing is audited and suppressed; repaired interval replay is not a fresh holdout. Historical release vintages and spatial generalization remain unverified."
     },
     {
       "id": "prediction.short_term_daily",
