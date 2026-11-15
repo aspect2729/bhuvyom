@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Motion: hide the first-screen elements until GSAP animates them in. Skipped for reduced motion; everything shows anyway if js/motion.js never runs. */(function(d){if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('gsap-on');setTimeout(function(){if(!window.__motionReady)d.classList.remove('gsap-on')},3000)})(document.documentElement);</script>
+<style>html.gsap-on header > div, html.gsap-on #top > div:first-child > div > *, html.gsap-on #top > div:last-child { visibility: hidden; }</style>
+<title>Compare — Bengaluru From Orbit</title>
+<meta name="description" content="Past against present: the same place on the same colour scale, with every weather layer.">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="assets/leaflet.css">
+<link rel="stylesheet" href="css/subpage.css">
+<link rel="stylesheet" href="css/compare.css">
+</head>
+<body>
+<div class="sp-page">
+
+  <header style="position:absolute;left:0;right:0;top:18px;z-index:3;padding:0 20px">
+    <div style="max-width:1320px;margin:0 auto;padding:10px 12px 10px 28px;min-height:68px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-radius:34px;background:linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(14,16,20,0.48) 40%, rgba(6,7,10,0.64) 100%);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.05), 0 10px 40px rgba(0,0,0,0.45)">
+      <a href="index.html" style="display:flex;align-items:baseline;gap:14px;text-decoration:none;color:#F2F2F2">
+        <span style="font-family:Jura, sans-serif;font-size:15px;letter-spacing:0.22em">BENGALURU FROM ORBIT</span>
+        <span aria-hidden="true" style="width:6px;height:6px;border-radius:3px;background:#E9A15A"></span>
+      </a>
+      <nav aria-label="Primary" style="display:flex;gap:4px;flex-wrap:wrap">
+        <a href="index.html#layers" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Layers</a>
+        <a href="index.html#systems" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">16 Systems</a>
+        <a href="simulation.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Simulations</a>
+        <a href="compare.html" aria-current="page" style="padding:12px 14px;color:#7FE0F0;text-decoration:none;font-size:13px">Compare</a>
+        <a href="index.html#data" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Data</a>
+        <a href="index.html#how" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Pipeline</a>
+      </nav>
+      <button type="button" data-action="sound" aria-pressed="false" aria-label="Turn space sound on" style="height:44px;padding:0 18px;border-radius:22px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#F2F2F2;font-size:12px;display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span aria-hidden="true" style="display:flex;align-items:center;gap:2px;height:14px">
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqB"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqC"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+        </span><span data-bind="soundText">Sound off</span>
+      </button>
+    </div>
+  </header>
+
+<main class="cmp-page">
+
+  <div class="cmp-wrap cmp-intro cmp-reveal">
+    <p class="cmp-eyebrow">Compare</p>
+    <h1><span class="a">THEN</span> AGAINST <span class="b">NOW</span></h1>
+    <p class="cmp-lede">The same place on the same colour scale, pulled apart in time. Pick a day in the past and set it beside the live conditions.</p>
+  </div>
+
+  <!-- 1 · Controls -->
+  <div class="cmp-wrap cmp-bar cmp-reveal">
+    <div class="ts-menu" id="cmp-menu">
+      <button type="button" class="ts-menu-btn ts-ctl" id="cmp-menu-btn" aria-haspopup="true" aria-expanded="false" aria-controls="cmp-menu-list">
+        <span class="sw" id="cmp-menu-sw" aria-hidden="true"></span>
+        <span><span class="k">LAYER</span><span class="v" id="cmp-menu-current">Air temperature</span></span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9C9CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="ts-menu-list" id="cmp-menu-list" role="menu" aria-label="Map layer"></div>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="Region">
+      <button type="button" data-region="ka" aria-pressed="true">Karnataka</button>
+      <button type="button" data-region="blr" aria-pressed="false">Bengaluru</button>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="Basemap">
+      <button type="button" data-basemap="day" aria-pressed="true">Day</button>
+      <button type="button" data-basemap="night" aria-pressed="false">Night</button>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="View">
+      <button type="button" data-mode="split" aria-pressed="true">Split view</button>
+      <button type="button" data-mode="all" aria-pressed="false">All 16 systems</button>
+    </div>
+  </div>
+
+  <div class="cmp-wrap cmp-when cmp-reveal" aria-label="Choose the past day">
+    <span class="lbl">Left map</span>
+    <button type="button" class="cmp-chip" data-ago="1" aria-pressed="false">1 year ago</button>
+    <button type="button" class="cmp-chip" data-ago="5" aria-pressed="false">5 years</button>
+    <button type="button" class="cmp-chip" data-ago="10" aria-pressed="true">10 years</button>
+    <button type="button" class="cmp-chip" data-ago="20" aria-pressed="false">20 years</button>
+    <button type="button" class="cmp-chip" data-ago="40" aria-pressed="false">40 years</button>
+    <label class="ts-sr" for="cmp-date">Past date</label>
+    <input type="date" class="cmp-date" id="cmp-date" min="1980-01-01">
+    <span class="cmp-hint" id="cmp-hint">HINT</span>
+  </div>
+
+  <!-- 2 · The two moments -->
+  <div class="cmp-wrap cmp-split" id="cmp-split">
+    <div class="cmp-strip">
+      <span class="ts-live" id="cmp-live" data-state="loading">Connecting to live data</span>
+      <span id="cmp-region-label">Karnataka · 191,791 km²</span>
+    </div>
+    <div class="cmp-grid" id="cmp-grid">
+      <figure class="cmp-pane past" id="pane-a">
+        <div class="cmp-frame" id="frame-a">
+          <div class="cmp-map" id="map-a" role="application" aria-label="Map of the past conditions"></div>
+          <canvas class="cmp-fx" id="fx-a" aria-hidden="true"></canvas>
+          <div class="cmp-chiprow ts-ctl"><b id="chipk-a">PAST</b><span id="chip-a">—</span></div>
+          <div class="ts-tip" id="tip-a" aria-hidden="true"></div>
+          <div class="cmp-veil" id="veil-a"><span class="ts-ctl">Loading the past…</span></div>
+        </div>
+        <figcaption class="cmp-read" aria-live="polite">
+          <div class="cmp-k" id="k-a">Past</div>
+          <div class="cmp-big" id="v-a">—</div>
+          <div class="cmp-sub" id="s-a"></div>
+        </figcaption>
+      </figure>
+      <figure class="cmp-pane now" id="pane-b">
+        <div class="cmp-frame" id="frame-b">
+          <div class="cmp-map" id="map-b" role="application" aria-label="Map of the present conditions"></div>
+          <canvas class="cmp-fx" id="fx-b" aria-hidden="true"></canvas>
+          <div class="cmp-chiprow ts-ctl"><b>NOW</b><span id="chip-b">—</span></div>
+          <div class="ts-tip" id="tip-b" aria-hidden="true"></div>
+          <div class="cmp-veil" id="veil-b"><span class="ts-ctl">Loading live data…</span></div>
+        </div>
+        <figcaption class="cmp-read" aria-live="polite">
+          <div class="cmp-k" id="k-b">Now</div>
+          <div class="cmp-big" id="v-b">—</div>
+          <div class="cmp-sub" id="s-b"></div>
+        </figcaption>
+      </figure>
+      <div class="cmp-time ts-ctl" id="cmp-time">
+        <button type="button" class="ts-tl-play" id="ts-tl-play" aria-label="Play timeline" aria-pressed="false"></button>
+        <div class="ts-tl-year" id="ts-tl-year">2016</div>
+        <div class="ts-tl-slider-wrap">
+          <div class="ts-tl-rail">
+            <div class="ts-tl-track"></div>
+            <div class="ts-tl-rec" id="ts-tl-rec" aria-hidden="true"></div>
+            <div class="ts-tl-fill" id="ts-tl-fill" style="width:30%"></div>
+            <div class="ts-tl-now" id="ts-tl-now" style="left:38.3%" aria-hidden="true"></div>
+            <input type="range" class="ts-tl-slider" id="ts-tl-slider" min="1980" max="2100" value="2016" aria-label="Year for the left map: 1980 to the year before now is the record, this year is live, later years are warming scenarios">
+          </div>
+          <div class="ts-tl-marks" aria-hidden="true">
+            <span style="left:0">1980 · RECORD</span>
+            <span class="now" id="ts-tl-livemark" style="left:38.3%">LIVE</span>
+            <span style="left:58.3%">2050</span>
+            <span style="left:100%">2100</span>
+          </div>
+        </div>
+        <div class="ts-scen off" id="ts-scen" role="group" aria-label="Emissions scenario">
+          <button type="button" data-scen="ssp126" aria-pressed="false" title="SSP1-2.6">Low emissions</button>
+          <button type="button" data-scen="ssp245" aria-pressed="true" title="SSP2-4.5">Middle road</button>
+          <button type="button" data-scen="ssp585" aria-pressed="false" title="SSP5-8.5">High emissions</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · What changed -->
+    <div class="cmp-delta">
+      <div>
+        <p class="cmp-eyebrow" style="font-size:12px;letter-spacing:0.3em">What changed</p>
+        <h2 id="cmp-change">—</h2>
+        <p id="cmp-change-note"></p>
+      </div>
+      <div class="ts-legend" aria-hidden="true">
+        <div class="lbl" id="ts-legend-label">Air temperature (°C)</div>
+        <div class="bar" id="ts-legend-bar"></div>
+        <div class="rng"><span id="ts-legend-min"></span><span id="ts-legend-max"></span></div>
+        <div class="fx">The same colour scale on both sides, so equal colours mean equal values.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional · every system at once -->
+  <div class="cmp-wrap cmp-all" id="cmp-all" hidden>
+    <div class="cmp-strip">
+      <span>All 16 systems · past <b style="color:#E9A15A;font-weight:400" id="all-past">—</b> against now</span>
+      <span id="all-note">Static snapshot</span>
+    </div>
+    <div class="cmp-all-grid" id="cmp-all-grid"></div>
+  </div>
+
+  <!-- 4 · Every layer -->
+  <div class="cmp-wrap cmp-table-wrap cmp-reveal">
+    <p class="cmp-eyebrow" style="font-size:12px;letter-spacing:0.3em">Every layer</p>
+    <table class="cmp-table">
+      <caption class="ts-sr">Region average of each layer, past and present</caption>
+      <thead><tr><th scope="col">Layer</th><th scope="col" class="past" id="th-past">Past</th><th scope="col" class="now">Now</th><th scope="col">Change</th></tr></thead>
+      <tbody id="cmp-tbody"></tbody>
+    </table>
+    <p>Averages over the whole area shown. Past values: ERA5 reanalysis (Open-Meteo archive); present values: live ECMWF / GFS models, and Copernicus CAMS for PM2.5. Ground temperature is the 0–7 cm soil layer on both sides. Rainfall is the total over the 30 days before each date. Boundary: geoBoundaries (DataMeet / Election Commission of India, CC BY 2.5 IN). Night basemap: NASA Black Marble (VIIRS). Day basemap: Esri, Maxar, Earthstar Geographics.</p>
+  </div>
+
+  <section id="honest" aria-labelledby="honestTitle" >
+  <div style="max-width:1320px;margin:0 auto;padding:80px 32px 120px;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(420px, 100%), 1fr));gap:48px;align-items:center">
+    <div>
+      <p style="margin:0;font-family:Jura, sans-serif;font-size:14px;letter-spacing:0.36em;color:#7FE0F0">HONEST DATA</p>
+      <h2 id="honestTitle" style="margin:14px 0 0;font-family:Jura, sans-serif;font-weight:300;font-size:clamp(40px, 5.2vw, 64px);letter-spacing:0.05em;line-height:1">TWO TEMPERATURES.<br>NEVER MIXED.</h2>
+      <p style="margin:26px 0 0;max-width:480px;font-size:15px;line-height:1.75;color:#B4B4BC;text-wrap:pretty">Air temperature is measured two metres above the ground. Land surface temperature is how hot the ground itself gets — roofs, roads, and open soils. They tell different stories, so they always appear as separate physical series.</p>
+    </div>
+    <div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,0.08);background:#050506">
+      <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:#C9C9CE">
+        <span style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="width:18px;height:3px;border-radius:2px;background:linear-gradient(90deg,#5B8CFF,#7FE0F0)"></span>Air temperature · 2 m</span>
+        <span style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="width:18px;height:3px;border-radius:2px;background:linear-gradient(90deg,#9A86B8,#E0905A)"></span>Land surface temperature</span>
+        <span style="margin-left:auto;font-size:10px;letter-spacing:0.1em;color:#E9A15A">SAMPLE VALUES</span>
+      </div>
+      <svg role="img" aria-label="Monthly air and land surface temperature, sample values" viewBox="0 0 560 240" style="width:100%;height:auto;margin-top:16px">
+        <defs>
+          <linearGradient id="gA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5B8CFF"></stop><stop offset="1" stop-color="#7FE0F0"></stop></linearGradient>
+          <linearGradient id="gL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9A86B8"></stop><stop offset="1" stop-color="#E0905A"></stop></linearGradient>
+          <linearGradient id="gLf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A86B8" stop-opacity="0.25"></stop><stop offset="1" stop-color="#9A86B8" stop-opacity="0"></stop></linearGradient>
+        </defs>
+        <path d="M24 24H540M24 84H540M24 144H540M24 204H540" stroke="#141418"></path>
+        <path d="M24.0 104.0 L70.5 80.0 L117.1 56.0 L163.6 48.0 L210.2 72.0 L256.7 112.0 L303.3 128.0 L349.8 128.0 L396.4 120.0 L442.9 120.0 L489.5 128.0 L536.0 120.0 L536.0 216 L24.0 216 Z" fill="url(#gLf)"></path>
+        <path d="M24.0 104.0 L70.5 80.0 L117.1 56.0 L163.6 48.0 L210.2 72.0 L256.7 112.0 L303.3 128.0 L349.8 128.0 L396.4 120.0 L442.9 120.0 L489.5 128.0 L536.0 120.0" stroke="url(#gL)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M24.0 168.0 L70.5 152.0 L117.1 136.0 L163.6 128.0 L210.2 136.0 L256.7 152.0 L303.3 160.0 L349.8 160.0 L396.4 160.0 L442.9 160.0 L489.5 168.0 L536.0 176.0" stroke="url(#gA)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div style="display:flex;justify-content:space-between;padding:0 2% 0 4%;font-size:11px;color:#A0A0A8">
+        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <div class="cmp-foot" style="padding-top:0"></div>
+</main>
+
+<footer class="sp-footer">
+      <span>Bengaluru From Orbit · Planetary &amp; Regional Environmental Engine</span>
+      <span>NASA POWER, MODIS, GPM · Open-Meteo · ECMWF · IPCC AR6</span>
+      <nav aria-label="Footer"><a href="index.html#layers">Layers</a><a href="index.html#systems">16 Systems</a><a href="simulation.html">Simulations</a><a href="compare.html">Compare</a><a href="predictions.html">Predictions</a><a href="index.html#data">Data</a></nav>
+    </footer>
+
+</div>
+
+<script src="assets/leaflet.js"></script>
+<script src="js/space-ambience.js"></script>
+<script src="js/subpage.js"></script>
+<script src="data/outlines.js"></script>
+<script src="js/compare.js"></script>
+<!-- Motion: Lenis smooth scrolling + GSAP / ScrollTrigger (vendored, work offline) -->
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/lenis.min.js"></script>
+<script src="js/motion.js"></script>
+</body>
+</html>
