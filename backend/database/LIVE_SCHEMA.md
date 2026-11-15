@@ -1,6 +1,15 @@
 # Live Supabase schema (source of truth)
 
+> Historical inventory below: counts and statuses have changed. The read-only
+> audit dated 2026-11-15 in `scientific/SUPABASE_PREDICTION_AUDIT.md` records the
+> current live tables, views, constraints, buckets and actual observation coverage.
+> Do not apply the old draft or migrations based on the empty-table claims below.
+
 Project: `https://jmecdqlhirtobdctnavt.supabase.co`
+
+2026-11-15 update: prediction tables now contain imported monthly experiments:
+18 model records, 1,416 runs, 13,386 predictions and 13,338 evaluations. See
+`scientific/SUPABASE_PREDICTION_IMPORT.md`; empty statuses below are historical.
 
 `database/schema.sql` is an **older draft** and does **not** match production.
 Do not apply it to this project — it would create conflicting table names.

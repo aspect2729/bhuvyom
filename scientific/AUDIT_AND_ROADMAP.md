@@ -1,5 +1,9 @@
 # BhuVyom — Repository & Scientific Audit, Plan and Status (2026-11-14)
 
+> Historical report. See [SUPABASE_PREDICTION_AUDIT.md](SUPABASE_PREDICTION_AUDIT.md)
+> for the 2026-11-15 live database audit and current hourly forecasting readiness,
+> and [PREDICTION_WORKFLOW.md](PREDICTION_WORKFLOW.md) for the current monthly engine.
+
 ## 1. Repository structure
 ```
 nasa/

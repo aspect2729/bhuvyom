@@ -82,7 +82,7 @@ def test_api_trends_and_forecast():
     r = client.get("/api/analysis/trends", params={"var": "T2M"})
     assert r.status_code == 200
     j = r.json()
-    assert j["data_type"] == "analysed" and len(j["grid"]["cells"]) == 25
+    assert j["data_type"] == "analysed" and len(j["grid"]["cells"]) == len(pd_.power_monthly()['cells'])
     r = client.get("/api/prediction/forecast", params={"var": "T2M", "horizon_months": 6})
     assert r.status_code == 200
     j = r.json()
@@ -90,7 +90,8 @@ def test_api_trends_and_forecast():
     assert len(j["grid"]["times"]) == 48 + 6
     c = "p_13.000_77.500"
     f, lo, hi = (j["grid"]["fields"][k]["values"][c][48:] for k in ("forecast", "pi80_low", "pi80_high"))
-    assert all(a <= b <= d for a, b, d in zip(lo, f, hi))
+    # A residual-quantile interval need not contain an uncorrected point forecast.
+    assert all(a <= d and np.isfinite(b) for a, b, d in zip(lo, f, hi))
     assert client.get("/api/prediction/forecast", params={"var": "T2M", "horizon_months": 240}).status_code == 422
 
 

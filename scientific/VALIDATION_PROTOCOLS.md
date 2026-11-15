@@ -1,14 +1,15 @@
 # Validation Protocols
 
-## Prediction (Engine 3)  [EXT: Tashman 2000; Hyndman & Athanasopoulos 2021 §5.10; Lei et al. 2018]
-1. **Chronological only.** No random splits. Models fitted with cutoff *c* use data ≤ *c*; features at origin *o* use data ≤ *o*.
-   Unit test `test_prediction_models_use_only_past_data` changes all future values and checks predictions are identical.
-2. **Rolling origin, yearly refit.** Calibration origins Jan 2011–Dec 2017; test origins Jan 2018–Dec 2024; horizons 1–12;
-   pooled over 25 cells (n = 2100 test pairs per horizon at h=1).
-3. **Metrics:** MAE, RMSE, bias per variable × horizon × model; skill = 1 − MAE/MAE_climatology. MAPE is **not** used (precipitation ≈ 0 in dry months).
-4. **Intervals:** quantiles (2.5/10/90/97.5 %) of calibration residuals of the selected model per horizon; empirical 80 %/95 % coverage on test.
-   Final forecast intervals use calibration+test residuals. Precipitation bounds clipped at 0 (physical bound).
-5. **Status semantics:** `validated_out_of_sample` = the above was executed; it does not mean "accurate" — read the skill table.
+## Prediction (Engine 3)
+The current protocol is specified in [PREDICTION_WORKFLOW.md](PREDICTION_WORKFLOW.md).
+It supersedes the v1 origin-based calibration/test scheme and combined residual
+pool. Validation/calibration targets are disjoint, input availability is lagged,
+and a final test after legacy exposure through 2025 is protected against reuse.
+Predictions are persisted before scoring; all displayed metrics are record-derived.
+The first real archives have an explicit interval-timing audit: original invalid
+interval coverage is suppressed, point forecasts are retained, and repaired
+coverage is labelled retrospective rather than a fresh test. Tests assert
+availability of both model inputs and interval-calibration targets.
 
 ## Analysis (Engine 2)
 * `tests/test_trends_ported.py` (12 tests): MK S/Var(S)/Z against hand and scipy `kendalltau`; Sen vs scipy `theilslopes`;

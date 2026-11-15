@@ -53,3 +53,15 @@ def test_future_endpoint_without_data():
     assert r.status_code in (200, 404)
     if r.status_code == 404:
         assert r.json()["error"] == "data_not_acquired"
+
+
+def test_cmip6_coordinate_headers_allow_station_column(monkeypatch, tmp_path):
+    (tmp_path / 'annual.jsonl').write_text('')
+    (tmp_path / 'point.csv').write_text('time,station,latitude[unit="degrees_north"],longitude[unit="degrees_east"],tas\n1995-01-01,GridPointRequestedAt,12.875,77.625,300\n')
+    monkeypatch.setattr(pj, 'PROC', tmp_path)
+    monkeypatch.setattr(pj, 'RAW', tmp_path)
+    pj._load.cache_clear()
+    try:
+        assert pj._load()['cell'] == {'lat': 12.875, 'lon': 77.625}
+    finally:
+        pj._load.cache_clear()

@@ -32,6 +32,8 @@ def _guard(fn, *a, **kw) -> Response:
         return JSONResponse(status_code=422, content=exc.to_dict())
     except FileNotFoundError as exc:
         return JSONResponse(status_code=404, content={"error": "data_not_acquired", "reason": str(exc)})
+    except ValueError as exc:
+        return JSONResponse(status_code=409, content={"error": "artifact_integrity_error", "reason": str(exc)})
 
 
 @lru_cache(maxsize=32)

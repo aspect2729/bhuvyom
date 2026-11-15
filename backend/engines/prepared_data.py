@@ -57,12 +57,25 @@ def load_boundary() -> dict[str, Any]:
 # ---------------------------------------------------------------- NASA POWER monthly
 @lru_cache(maxsize=1)
 def power_monthly() -> dict[str, Any]:
-    files = sorted(POWER_MONTHLY_DIR.glob("monthly_*_1981_2025.json"))
+    # Keep the newest acquired archive for each point, avoiding duplicate cells
+    # when a previous 1981-2025 snapshot and an updated snapshot coexist.
+    newest = {}
+    for path in sorted(POWER_MONTHLY_DIR.glob('monthly_*_1981_*.json')):
+        point = re.findall(r'monthly_([\d.]+)_([\d.]+)_', path.name)
+        if point:
+            newest[point[0]] = path
+    files = sorted(newest.values())
     if not files:
         raise FileNotFoundError(f"No NASA POWER monthly files in {POWER_MONTHLY_DIR}")
     cells, series, meta, sources = [], {}, {}, set()
-    for f in files:
-        raw = json.loads(f.read_text())
+    payloads = [(f, json.loads(f.read_text())) for f in files]
+    usable_keys = [k for _, raw in payloads for var in ('T2M', 'PRECTOTCORR') for k, v in raw['properties']['parameter'].get(var, {}).items()
+                   if len(k) == 6 and 1 <= int(k[4:]) <= 12 and v is not None and math.isfinite(float(v)) and float(v) != float(raw['header'].get('fill_value', -999.))]
+    if not usable_keys:
+        raise FileNotFoundError('No usable monthly temperature or precipitation observations')
+    end = max(usable_keys)
+    keys = [f'{year}{month:02d}' for year in range(1981, int(end[:4]) + 1) for month in range(1, 13) if f'{year}{month:02d}' <= end]
+    for f, raw in payloads:
         lat, lon = (float(x) for x in re.findall(r"monthly_([\d.]+)_([\d.]+)_", f.name)[0])
         cid = f"p_{lat:.3f}_{lon:.3f}"
         cells.append({"id": cid, "center": [lon, lat], "polygon": _ring(lon - POWER_DLON / 2, lat - POWER_DLAT / 2, lon + POWER_DLON / 2, lat + POWER_DLAT / 2), "is_city_cell": cid == CITY_CELL})
@@ -71,8 +84,9 @@ def power_monthly() -> dict[str, Any]:
         for var, vals in raw["properties"]["parameter"].items():
             m = raw["parameters"][var]
             meta[var] = {"unit": m["units"], "long_name": m["longname"]}
-            keys = sorted(k for k in vals if not k.endswith("13"))  # YYYY13 = annual, excluded
-            v = [None if (vals[k] is None or float(vals[k]) == fill) else float(vals[k]) for k in keys]
+            # Explicit calendar alignment: a missing key must not shift every later
+            # observation or misalign cells. YYYY13 annual aggregates are excluded.
+            v = [None if (vals.get(k) is None or not math.isfinite(float(vals[k])) or float(vals[k]) == fill) else float(vals[k]) for k in keys]
             series.setdefault(var, {})[cid] = v
             months = [f"{k[:4]}-{k[4:]}" for k in keys]
     return {"cells": cells, "months": months, "series": series, "meta": meta, "header_sources": sorted(sources), "api_version": raw["header"].get("api", {}).get("version"), "files": [f.name for f in files]}
