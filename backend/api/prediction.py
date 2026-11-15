@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from typing import Literal
+from typing import Literal, Optional
 
 import numpy as np
 from fastapi import APIRouter, Query
@@ -109,13 +109,24 @@ def performance_data(run_id, dataset, horizon, grid_id):
 
 
 @router.get('/api/prediction/experiments/{run_id}/performance')
-def performance(run_id: str, dataset: Dataset = 'validation', horizon: int | None = Query(1, ge=1, le=12), grid_id: str | None = None):
+def performance(
+    run_id: str,
+    dataset: Dataset = 'validation',
+    horizon: Optional[int] = Query(1, ge=1, le=12),
+    grid_id: Optional[str] = None,
+):
     return guard(lambda: performance_data(run_id, dataset, horizon, grid_id))
 
 
 @router.get('/api/prediction/experiments/{run_id}/records')
-def records(run_id: str, dataset: Dataset = 'validation', horizon: int | None = Query(None, ge=1, le=12), grid_id: str | None = None,
-            offset: int = Query(0, ge=0), limit: int = Query(500, ge=1, le=5000)):
+def records(
+    run_id: str,
+    dataset: Dataset = 'validation',
+    horizon: Optional[int] = Query(None, ge=1, le=12),
+    grid_id: Optional[str] = None,
+    offset: int = Query(0, ge=0),
+    limit: int = Query(500, ge=1, le=5000),
+):
     def result():
         rows = workflow.stage_rows(run_id, dataset)
         rows = [r for r in rows if (horizon is None or r['forecast_horizon'] == horizon) and (not grid_id or r['grid_id'] == grid_id)]

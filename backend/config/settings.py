@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     )
     cds_api_key: Optional[str] = Field(default=None, alias="CDS_API_KEY")
 
+    # Supabase is optional and NOT used for live temperature (Earthdata OPeNDAP instead).
     supabase_url: Optional[str] = Field(default=None, alias="SUPABASE_URL")
     supabase_service_role_key: Optional[str] = Field(
         default=None, alias="SUPABASE_SERVICE_ROLE_KEY"
@@ -45,6 +46,8 @@ class Settings(BaseSettings):
         default=None, alias="SUPABASE_PUBLISHABLE_KEY"
     )
     supabase_bucket: str = Field(default="bhuvyom-rasters", alias="SUPABASE_BUCKET")
+    # Kill-switch: DB observation ingest (pipeline → Supabase) off by default.
+    use_supabase_ingest: bool = Field(default=False, alias="BHUVYOM_USE_SUPABASE_INGEST")
 
     data_root: Path = Field(default=DEFAULT_DATA_ROOT, alias="BHUVYOM_DATA_ROOT")
     default_region: str = Field(default="bengaluru_bbmp", alias="BHUVYOM_DEFAULT_REGION")

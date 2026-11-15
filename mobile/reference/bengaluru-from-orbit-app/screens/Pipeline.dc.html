@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pipeline — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600&amp;family=Poppins:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#050506}
+a{color:#7FE0F0;text-decoration:none}a:hover{color:#B8F0F8}
+button{font:inherit;color:inherit;cursor:pointer}
+input[type=range]{accent-color:#7FE0F0}
+select{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1420px; display: flex; flex-direction: column; background: #050506; color: #F2F2F2; font-family: Poppins, sans-serif">
+<header style="display: flex; align-items: center; gap: 10px; padding: 52px 20px 10px">
+<a href="Main.dc.html" aria-label="Back" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; color: #F2F2F2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="flex: 1; font-family: Jura, sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #F2F2F2">PIPELINE</div>
+<button type="button" aria-label="Sound off" style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.14em; color: #C9C9CE"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M17 9l4 6"></path><path d="M21 9l-4 6"></path></svg>OFF</button>
+</header>
+<main style="display: flex; flex-direction: column; gap: 22px; padding: 4px 20px 28px">
+  <section style="display: flex; flex-direction: column; gap: 10px">
+    <div style="font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.28em; color: #7FE0F0">HOW IT WORKS</div>
+    <h1 style="margin: 0; font-family: Jura, sans-serif; font-weight: 300; font-size: 34px; line-height: 1.05; letter-spacing: 0.05em">FROM ORBIT<br>TO STREET</h1>
+  </section>
+
+  <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+    <sc-for list="{{steps}}" as="s" hint-placeholder-count="5">
+      <li style="display: flex; gap: 14px">
+        <div style="display: flex; flex-direction: column; align-items: center; flex: none; width: 44px">
+          <span style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 22px; font-family: Jura, sans-serif; font-size: 14px; font-weight: 600; {{s.dot}}">{{s.n}}</span>
+          <span style="flex: 1; width: 1px; min-height: 20px; background: {{s.rail}}"></span>
+        </div>
+        <button type="button" onClick="{{s.pick}}" aria-expanded="{{s.open}}" style="flex: 1; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; padding: 12px 14px; border-radius: 18px; text-align: left; {{s.card}}">
+          <span style="font-family: Jura, sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.04em; color: #F2F2F2">{{s.t}}</span>
+          <span style="font-size: 13px; line-height: 1.55; color: #A0A0A8">{{s.d}}</span>
+          <sc-if value="{{s.isOpen}}" hint-placeholder-val="{{ false }}">
+            <span style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px"><sc-for list="{{s.tags}}" as="g" hint-placeholder-count="3"><span style="padding: 5px 10px; border-radius: 999px; background: rgba(127,224,240,0.08); font-size: 11px; color: #7FE0F0">{{g}}</span></sc-for></span>
+          </sc-if>
+        </button>
+      </li>
+    </sc-for>
+  </ol>
+
+  <section aria-labelledby="ctaTitle" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; min-height: 420px; padding: 24px 22px; border-radius: 28px; background: #07080C; border: 1px solid rgba(255,255,255,0.10)">
+    <img src="../assets/earth-clouds.jpg" alt="" style="position: absolute; left: 40px; top: 120px; width: 420px; height: 420px; border-radius: 50%; opacity: 0.9; pointer-events: none">
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, #07080C 22%, rgba(7,8,12,0) 60%); pointer-events: none"></div>
+    <h2 id="ctaTitle" style="position: relative; margin: 0; font-family: Jura, sans-serif; font-weight: 300; font-size: 38px; line-height: 1.02; letter-spacing: 0.06em">EDGE<br>OF THE<br>CITY</h2>
+    <p style="position: relative; margin: 0; max-width: 240px; font-size: 13px; line-height: 1.6; color: #C9C9CE">Explore Bengaluru’s atmospheric signals, microclimates, and satellite telemetry from orbit.</p>
+    <a href="Layers.dc.html" style="position: relative; align-self: flex-start; display: flex; align-items: center; gap: 12px; height: 50px; padding: 0 6px 0 20px; border-radius: 25px; background: #F2F2F2; color: #050506; font-family: Jura, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.2em">GET STARTED<span style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 19px; background: #050506; color: #F2F2F2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></a>
+  </section>
+
+  <footer style="display: flex; flex-direction: column; gap: 6px; padding: 0 2px; font-size: 11px; line-height: 1.6; color: #8A8A92">
+    <span style="font-family: Jura, sans-serif; letter-spacing: 0.16em; color: #A0A0A8">BENGALURU FROM ORBIT</span>
+    <span>Planetary &amp; Regional Environmental Engine · NASA POWER, MODIS, GPM · Open-Meteo · ECMWF · IPCC AR6</span>
+  </footer>
+</main>
+<nav aria-label="Main" style="margin-top: auto; position: sticky; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 26px; background: rgba(8,8,10,0.92); backdrop-filter: blur(18px); border-top: 1px solid rgba(255,255,255,0.08)">
+<a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #7FE0F0; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: rgba(127,224,240,0.10)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg></span>Home</a>
+<a href="Systems.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect></svg></span>Systems</a>
+<a href="Simulate.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"></path><path d="M18 6h2"></path><circle cx="16" cy="6" r="2"></circle><path d="M4 12h3"></path><path d="M11 12h9"></path><circle cx="9" cy="12" r="2"></circle><path d="M4 18h12"></path><path d="M20 18h0"></path><circle cx="18" cy="18" r="2"></circle></svg></span>Simulate</a>
+<a href="Compare.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><path d="M12 4v16"></path><path d="M7 10l-2 2 2 2"></path><path d="M17 10l2 2-2 2"></path></svg></span>Compare</a>
+<a href="Forecast.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 3 8-8"></path><path d="M15 7h5v5"></path><path d="M3 21h18"></path></svg></span>Forecast</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1420}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { open: 0 }; }
+  renderVals() {
+    const S = [
+      { t: 'Retrieve', d: 'Pull each environmental variable from NASA APIs across Karnataka’s geographic bounding box.', tags: ['NASA POWER', 'MODIS', 'GPM IMERG'] },
+      { t: 'Process', d: 'Normalize coordinates, clean gaps, calibrate against IMD stations, and preserve physical units.', tags: ['Gap filling', 'IMD calibration', 'Units kept'] },
+      { t: 'Visualise', d: 'Ray-trace the 8K planet in WebGL2 and map street-level gradients across urban wards.', tags: ['WebGL2 globe', 'Ward gradients'] },
+      { t: 'Simulate', d: 'Run what-if scenarios for cool roofs, lake restoration, and CMIP6 climate warming to 2100.', tags: ['Cool roofs', 'Lake restoration', 'CMIP6 · 2100'] },
+      { t: 'Validate', d: 'Audit ground truth sensors, uncertainty margins, and policy decision metrics.', tags: ['Ground truth', 'Uncertainty', 'Policy metrics'] }
+    ];
+    const o = this.state.open;
+    return {
+      steps: S.map((s, i) => ({ ...s, n: String(i + 1).padStart(2, '0'), isOpen: i === o, open: String(i === o),
+        dot: i === o ? 'background: #7FE0F0; color: #050506' : i < o ? 'background: rgba(127,224,240,0.18); color: #7FE0F0' : 'background: rgba(255,255,255,0.05); color: #C9C9CE; border: 1px solid rgba(255,255,255,0.12)',
+        rail: i === S.length - 1 ? 'transparent' : (i < o ? 'rgba(127,224,240,0.5)' : 'rgba(255,255,255,0.12)'),
+        card: i === o ? 'background: rgba(127,224,240,0.06); border: 1px solid rgba(127,224,240,0.30)' : 'background: transparent; border: 1px solid transparent',
+        pick: () => this.setState({ open: i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

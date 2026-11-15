@@ -44,13 +44,24 @@ def bbmp_area_km2() -> float:
 
 @lru_cache(maxsize=1)
 def storm_pattern() -> dict:
+    # Prefer Supabase daily precip wettest-day pattern when available
+    try:
+        from engines.simulation import db_forcing
+
+        db = db_forcing.load_daily_precip()
+        if db is not None:
+            pat = db_forcing.wettest_day_pattern(db)
+            if pat is not None:
+                return pat
+    except Exception:  # noqa: BLE001 — fall back to local GPM
+        pass
     g = pd_.gpm_daily()
     arr = np.array([[np.nan if v is None else v for v in g["values"][c["id"]]] for c in g["cells"]], float)  # cells × days
     city_mean = np.nanmean(arr, 0)
     d = int(np.nanargmax(city_mean))
     pat = arr[:, d] / city_mean[d]
     return {"date": g["dates"][d], "city_mean_mm": float(city_mean[d]), "max_cell_mm": float(np.nanmax(arr[:, d])),
-            "pattern": pat, "cells": g["cells"]}
+            "pattern": pat, "cells": g["cells"], "source": "gpm_imerg_v07_daily"}
 
 
 def run(intensity_mm_h: float, duration_h: float, permeable: float, today_permeable: float = TODAY_PERMEABLE,
@@ -88,9 +99,14 @@ def run(intensity_mm_h: float, duration_h: float, permeable: float, today_permea
         "curve": {"rain_mm": curve_p.tolist(), "today_mm": [clean(v, 2) for v in runoff_mm(curve_p, cn_b, lam)], "scenario_mm": [clean(v, 2) for v in runoff_mm(curve_p, cn_s, lam)]},
         "parameters": {"CN_pervious": cnp, "CN_today": clean(cn_b, 1), "CN_scenario": clean(cn_s, 1), "S_today_mm": clean(retention_mm(cn_b), 1),
                        "S_scenario_mm": clean(retention_mm(cn_s), 1), "Ia_today_mm": clean(lam * retention_mm(cn_b), 1), "Ia_scenario_mm": clean(lam * retention_mm(cn_s), 1)},
-        "storm_shape": {"source": "GPM IMERG V07 Final daily", "date": sp["date"], "city_mean_mm": clean(sp["city_mean_mm"], 1), "max_cell_mm": clean(sp["max_cell_mm"], 1)},
+        "storm_shape": {
+            "source": sp.get("source") or "GPM IMERG V07 Final daily",
+            "date": sp["date"],
+            "city_mean_mm": clean(sp["city_mean_mm"], 1),
+            "max_cell_mm": clean(sp["max_cell_mm"], 1),
+        },
         "data_type": "simulated", "validation": "not_validated",
         "assumptions": [f"Today's permeable share is an assumption ({today_permeable:.0%}); no impervious-surface product is integrated.",
-                        "Storm footprint = wettest observed GPM day, rescaled to the chosen depth.", "AMC II antecedent moisture; no drainage, routing or lake storage."],
+                        "Storm footprint = wettest observed daily precip day (DB or GPM), rescaled to the chosen depth.", "AMC II antecedent moisture; no drainage, routing or lake storage."],
         "methodology": "SCS Curve Number, event form (USDA-NRCS NEH-630 Ch.10; TR-55)",
     }

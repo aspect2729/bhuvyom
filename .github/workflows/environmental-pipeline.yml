@@ -1,17 +1,17 @@
-# Persistent Karnataka environmental data updates for Bhuvyom.
-# Requires repository secrets:
+# Persistent Karnataka environmental updates — NASA GES DISC only.
+# Required repository secrets:
 #   SUPABASE_URL
 #   SUPABASE_SERVICE_ROLE_KEY
-#   EARTHDATA_TOKEN (optional; for GPM / Earthdata products)
+#   EARTHDATA_TOKEN  (existing NASA Earthdata token — do not rotate here)
 #
-# Schedule: daily 02:30 UTC (latest + forecast); weekly Monday 03:30 UTC (historical refresh)
+# Schedule: daily 02:30 UTC (MERRA-2 + GPM latest); weekly Monday 03:30 UTC (90-day refresh)
 
 name: Environmental pipeline
 
 on:
   schedule:
-    - cron: "30 2 * * *"      # daily latest + forecast
-    - cron: "30 3 * * 1"      # weekly historical/archive refresh
+    - cron: "30 2 * * *"
+    - cron: "30 3 * * 1"
   workflow_dispatch:
     inputs:
       phase:
@@ -23,7 +23,8 @@ on:
           - all
           - historical
           - latest
-          - forecast
+          - merra2
+          - gpm
           - verify
 
 jobs:
@@ -54,13 +55,16 @@ jobs:
         run: |
           test -n "$SUPABASE_URL"
           test -n "$SUPABASE_SERVICE_ROLE_KEY"
+          test -n "$EARTHDATA_TOKEN"
           {
             echo "SUPABASE_URL=$SUPABASE_URL"
             echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY"
-            echo "EARTHDATA_TOKEN=${EARTHDATA_TOKEN:-}"
+            echo "EARTHDATA_TOKEN=$EARTHDATA_TOKEN"
             echo "BHUVYOM_DEFAULT_REGION=karnataka"
             echo "BHUVYOM_LOG_LEVEL=INFO"
-            echo "BHUVYOM_MAX_CONCURRENCY=3"
+            echo "BHUVYOM_MAX_CONCURRENCY=2"
+            echo "BHUVYOM_USE_SUPABASE_INGEST=true"
+            echo "BHUVYOM_HTTP_TIMEOUT_SECONDS=180"
           } > .env
 
       - name: Select phase
@@ -74,16 +78,16 @@ jobs:
             echo "phase=latest" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run pipeline
+      - name: Run GES DISC pipeline
         run: |
           PHASE="${{ steps.phase.outputs.phase }}"
           if [ "$PHASE" = "latest" ]; then
-            python -m pipeline.run --phase power-daily --power-daily-days 14
-            python -m pipeline.run --phase om-forecast --forecast-days 7
+            python -m pipeline.run --phase merra2 --merra2-days 14
+            python -m pipeline.run --phase gpm --gpm-days 14
             python -m pipeline.run --phase verify
           elif [ "$PHASE" = "historical" ]; then
-            python -m pipeline.run --phase power-monthly --power-monthly-start 2020
-            python -m pipeline.run --phase om-archive --om-archive-days 90
+            python -m pipeline.run --phase merra2-historical --merra2-historical-days 90
+            python -m pipeline.run --phase gpm --gpm-days 60
             python -m pipeline.run --phase verify
           else
             python -m pipeline.run --phase "$PHASE"

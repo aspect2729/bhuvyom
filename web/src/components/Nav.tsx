@@ -17,7 +17,7 @@ export function Nav({ items, right }: { items: NavItem[]; right: ReactNode }) {
     <header className="absolute inset-x-0 top-[18px] z-30 px-5">
       <div className="glass-pill mx-auto box-border flex min-h-[68px] max-w-[1320px] flex-wrap items-center justify-between gap-6 py-2.5 pl-7 pr-3 max-[760px]:gap-2.5 max-[760px]:pl-[18px] max-[760px]:pr-2">
         <Link to="/" className="flex items-baseline gap-3.5 text-ink no-underline">
-          <span className="font-display text-[15px] tracking-[0.22em] max-[760px]:text-[12px] max-[760px]:tracking-[0.12em]">BENGALURU FROM ORBIT</span>
+          <span className="font-display text-[20px] tracking-[0.28em] max-[760px]:text-[16px] max-[760px]:tracking-[0.2em]">BhuVyom</span>
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-[3px] bg-amber" />
         </Link>
         <nav id="primary-nav" aria-label="Primary" className={`flex flex-wrap gap-1 max-[760px]:order-3 max-[760px]:w-full max-[760px]:flex-col max-[760px]:gap-0 ${open ? '' : 'max-[760px]:hidden'}`}>

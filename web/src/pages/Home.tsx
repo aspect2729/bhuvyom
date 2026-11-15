@@ -42,7 +42,17 @@ function useData() {
   return { site, boundary, lab, future, error }
 }
 
+/** URANUS static site (index.html / simulation.html / …) is the current home UI. */
+const URANUS_HOME =
+  (import.meta as { env?: { VITE_URANUS_URL?: string } }).env?.VITE_URANUS_URL ||
+  `${window.location.protocol}//${window.location.hostname}:8080/`
+
 export default function Home() {
+  // Always land on the URANUS branch site for the homepage (updated UI).
+  useEffect(() => {
+    window.location.replace(URANUS_HOME)
+  }, [])
+
   const { site, boundary, lab, future, error } = useData()
   const [chip, setChip] = useState('air')
   const goLayer = (key: string, link?: string) => {
@@ -51,8 +61,11 @@ export default function Home() {
   }
   return (
     <div className="min-w-[320px] overflow-hidden bg-black font-sans text-ink">
-      {/* HERO */}
-      <div className="relative h-[960px]">
+      <div className="flex h-screen items-center justify-center font-display text-[13px] tracking-[0.3em] text-ink/60">
+        OPENING URANUS HOME…
+      </div>
+      {/* HERO (legacy React shell — kept for /lab /future deep links after redirect abort) */}
+      <div className="relative hidden h-[960px]">
         <Globe height={960} layout={heroLayout(960)} />
         <Nav items={NAV} right={<SoundButton />} />
         <section id="top" aria-labelledby="heroTitle" className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[960px]">

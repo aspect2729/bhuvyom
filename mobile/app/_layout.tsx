@@ -2,6 +2,7 @@ import {
   Jura_300Light,
   Jura_400Regular,
   Jura_500Medium,
+  Jura_600SemiBold,
 } from '@expo-google-fonts/jura';
 import {
   Poppins_300Light,
@@ -23,6 +24,7 @@ export default function RootLayout() {
     Jura_300Light,
     Jura_400Regular,
     Jura_500Medium,
+    Jura_600SemiBold,
     Poppins_300Light,
     Poppins_400Regular,
     Poppins_500Medium,
@@ -37,7 +39,13 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+        <Stack.Screen name="(tabs)" />
+        {/* Pushed from Home (back arrow; Home stays the active tab) */}
+        <Stack.Screen name="layers" />
+        <Stack.Screen name="data" />
+        <Stack.Screen name="pipeline" />
+      </Stack>
     </View>
   );
 }

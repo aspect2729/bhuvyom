@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Bengaluru From Orbit",
+    "name": "BhuVyom",
     "slug": "bengaluru-from-orbit",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#050506"
       },
       "package": "com.bhuvyom.bengalurufromorbit"
     },
@@ -34,7 +34,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000000"
+          "backgroundColor": "#050506"
         }
       ]
     ],

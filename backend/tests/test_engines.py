@@ -102,7 +102,7 @@ def test_api_simulation_and_incompatible_forcing():
     j = r.json()
     assert j["data_type"] == "simulated" and j["validation"]["status"] == "not_validated"
     assert all(v >= 0 for v in j["grid"]["fields"]["total_difference"]["values"].values() if v is not None)
-    r = client.get("/api/simulation/runoff", params={"forcing": "prediction:abc"})
+    r = client.get("/api/simulation/runoff", params={"forcing": "prediction:abc", "persist": False})
     assert r.status_code == 422 and "incompatible" in r.json()["reason"]
 
 

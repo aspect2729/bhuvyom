@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Data layers — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600&amp;family=Poppins:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#050506}
+a{color:#7FE0F0;text-decoration:none}a:hover{color:#B8F0F8}
+button{font:inherit;color:inherit;cursor:pointer}
+input[type=range]{accent-color:#7FE0F0}
+select{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1520px; display: flex; flex-direction: column; background: #050506; color: #F2F2F2; font-family: Poppins, sans-serif">
+<header style="display: flex; align-items: center; gap: 10px; padding: 52px 20px 10px">
+<a href="Main.dc.html" aria-label="Back" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; color: #F2F2F2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="flex: 1; font-family: Jura, sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #F2F2F2">DATA LAYERS</div>
+<button type="button" aria-label="Sound off" style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.14em; color: #C9C9CE"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M17 9l4 6"></path><path d="M21 9l-4 6"></path></svg>OFF</button>
+</header>
+<main style="display: flex; flex-direction: column; gap: 22px; padding: 4px 20px 28px">
+  <section style="display: flex; flex-direction: column; gap: 10px">
+    <h1 style="margin: 0; font-family: Jura, sans-serif; font-weight: 300; font-size: 34px; line-height: 1.05; letter-spacing: 0.05em">PRIMARY SIGNALS.<br>ONE MAP.</h1>
+    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #A0A0A8">Each layer keeps its own source, unit, and physical meaning. Air temperature and land surface temperature stay separate — they measure fundamentally different phenomena.</p>
+  </section>
+
+  <section aria-live="polite" aria-label="Selected layer" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 24px; background: linear-gradient(150deg, rgba(91,140,255,0.22) 0%, rgba(127,224,240,0.06) 55%, rgba(255,255,255,0.02) 100%); border: 1px solid rgba(127,224,240,0.28)">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px; background: rgba(5,5,6,0.5); color: #7FE0F0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{sel.icon}}"></path></svg></span>
+      <div style="flex: 1">
+        <div style="font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.24em; color: #7FE0F0">{{sel.sys}}</div>
+        <div style="font-family: Jura, sans-serif; font-size: 22px; font-weight: 500; letter-spacing: 0.03em">{{sel.name}}</div>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #C9C9CE">{{sel.desc}}</p>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <div style="padding: 10px 12px; border-radius: 12px; background: rgba(5,5,6,0.45)"><div style="font-size: 11px; color: #8A8A92">Source</div><div style="font-size: 13px; margin-top: 2px">{{sel.src}}</div></div>
+      <div style="padding: 10px 12px; border-radius: 12px; background: rgba(5,5,6,0.45)"><div style="font-size: 11px; color: #8A8A92">Unit</div><div style="font-size: 13px; margin-top: 2px">{{sel.unit}}</div></div>
+    </div>
+    <a href="Simulate.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 23px; background: #F2F2F2; color: #050506; font-family: Jura, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.18em">VIEW ON THE MAP<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+  </section>
+
+  <section aria-labelledby="allLayers" style="display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between">
+      <h2 id="allLayers" style="margin: 0; font-family: Jura, sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #C9C9CE">7 LAYERS</h2>
+      <span style="font-size: 12px; color: #8A8A92">Tap to inspect</span>
+    </div>
+    <sc-for list="{{layers}}" as="l" hint-placeholder-count="7">
+      <button type="button" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" style="display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 12px 14px; border-radius: 18px; text-align: left; {{l.ring}}">
+        <span style="display: flex; align-items: center; justify-content: center; flex: none; width: 42px; height: 42px; border-radius: 14px; background: rgba(255,255,255,0.05); color: {{l.ic}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.icon}}"></path></svg></span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <span style="font-size: 15px; font-weight: 500; color: #F2F2F2">{{l.name}}</span>
+          <span style="font-size: 12px; color: #A0A0A8">{{l.src}}</span>
+        </span>
+        <span style="font-family: Jura, sans-serif; font-size: 13px; color: #C9C9CE">{{l.unit}}</span>
+      </button>
+    </sc-for>
+  </section>
+
+  <a href="Systems.dc.html" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: 22px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.22); color: #F2F2F2">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-family: Jura, sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.04em">Complete 16 Systems</span>
+      <span style="padding: 4px 10px; border-radius: 999px; background: rgba(233,161,90,0.16); color: #E9A15A; font-size: 11px; font-family: Jura, sans-serif; letter-spacing: 0.12em">100+ VARS</span>
+    </div>
+    <span style="font-size: 13px; line-height: 1.55; color: #A0A0A8">Vegetation, air quality PM2.5, carbon flux, solar space Kp, cryosphere, and 2100 climate forecasts.</span>
+    <span style="font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.18em; color: #7FE0F0">EXPLORE 16 SYSTEMS →</span>
+  </a>
+</main>
+<nav aria-label="Main" style="margin-top: auto; position: sticky; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 26px; background: rgba(8,8,10,0.92); backdrop-filter: blur(18px); border-top: 1px solid rgba(255,255,255,0.08)">
+<a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #7FE0F0; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: rgba(127,224,240,0.10)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg></span>Home</a>
+<a href="Systems.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect></svg></span>Systems</a>
+<a href="Simulate.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"></path><path d="M18 6h2"></path><circle cx="16" cy="6" r="2"></circle><path d="M4 12h3"></path><path d="M11 12h9"></path><circle cx="9" cy="12" r="2"></circle><path d="M4 18h12"></path><path d="M20 18h0"></path><circle cx="18" cy="18" r="2"></circle></svg></span>Simulate</a>
+<a href="Compare.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><path d="M12 4v16"></path><path d="M7 10l-2 2 2 2"></path><path d="M17 10l2 2-2 2"></path></svg></span>Compare</a>
+<a href="Forecast.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 3 8-8"></path><path d="M15 7h5v5"></path><path d="M3 21h18"></path></svg></span>Forecast</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1520}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: 0 }; }
+  renderVals() {
+    const L = [
+      { name: 'Air temperature', desc: 'How warm ambient air is two metres above the Mysore Plateau.', src: 'NASA POWER · T2M', unit: '°C', sys: 'SYSTEM 01 · TEMPERATURE', icon: 'M10 13.5V4a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0z M12 9v6' },
+      { name: 'Land surface temperature', desc: 'How hot asphalt, rooftops, and concrete corridors get under the tropical sun.', src: 'MODIS · MOD11A2', unit: '°C', sys: 'SYSTEM 01 · TEMPERATURE', icon: 'M3 15l9 5 9-5 M3 10l9 5 9-5-9-5z' },
+      { name: 'Precipitation', desc: 'Monsoon accumulation and high-intensity localized cloudbursts.', src: 'GPM IMERG', unit: 'mm', sys: 'SYSTEM 02 · PRECIPITATION & WATER', icon: 'M7 14a5 5 0 1 1 9.6-2A4 4 0 1 1 17 20H8a4 4 0 0 1-1-6z M9 22l1-2 M13 22l1-2' },
+      { name: 'Relative humidity', desc: 'Water vapor fraction governing thermal comfort and convective storm readiness.', src: 'NASA POWER · RH2M', unit: '%', sys: 'SYSTEM 04 · ATMOSPHERIC ACTIVITY', icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z M9.5 16l5-5' },
+      { name: 'Wind speed', desc: 'Air velocity dispersing heat and industrial plumes across plateau valleys.', src: 'NASA POWER · WS2M', unit: 'm/s', sys: 'SYSTEM 04 · ATMOSPHERIC ACTIVITY', icon: 'M3 8h11a3 3 0 1 0-3-3 M3 12h16a3 3 0 1 1-3 3 M3 16h8' },
+      { name: 'Solar radiation', desc: 'All-sky direct and diffuse irradiance driving urban rooftop solar potential.', src: 'NASA POWER · ALLSKY', unit: 'kWh/m²', sys: 'SYSTEM 10 · SOLAR & SPACE', icon: 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z M12 1v2 M12 21v2 M4.2 4.2l1.4 1.4 M18.4 18.4l1.4 1.4 M1 12h2 M21 12h2' },
+      { name: 'Cloud cover', desc: 'Share of the celestial dome occluded by tropospheric clouds.', src: 'NASA POWER · CLOUD_AMT', unit: '%', sys: 'SYSTEM 04 · ATMOSPHERIC ACTIVITY', icon: 'M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19.5 11 3.5 3.5 0 0 1 18 18z' }
+    ];
+    const p = this.state.picked;
+    return {
+      sel: L[p],
+      layers: L.map((l, i) => ({ ...l, pressed: String(i === p), ic: i === p ? '#7FE0F0' : '#C9C9CE',
+        ring: i === p ? 'background: rgba(127,224,240,0.08); border: 1px solid rgba(127,224,240,0.45)' : 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)',
+        pick: () => this.setState({ picked: i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

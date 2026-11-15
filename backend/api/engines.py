@@ -116,6 +116,8 @@ def prediction_run(var: str = Query("T2M"), horizon_months: int = Query(12), for
 
 @router.get("/api/simulation/runoff")
 def simulation_runoff(baseline_impervious: float = Query(0.6, ge=0, le=1), scenario_impervious: float = Query(0.8, ge=0, le=1),
-                      soil_group: Literal["B", "C", "D"] = "C", lam: float = Query(0.2), forcing: str = "observed_gpm",
-                      start: Optional[str] = None, end: Optional[str] = None) -> Response:
-    return _guard(lambda: _json(simulation.run(baseline_impervious, scenario_impervious, soil_group, lam, start, end, forcing)))
+                      soil_group: Literal["B", "C", "D"] = "C", lam: float = Query(0.2),
+                      forcing: str = Query("auto"),
+                      start: Optional[str] = None, end: Optional[str] = None,
+                      persist: bool = Query(True)) -> Response:
+    return _guard(lambda: _json(simulation.run(baseline_impervious, scenario_impervious, soil_group, lam, start, end, forcing, persist=persist)))

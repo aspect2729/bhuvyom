@@ -14,7 +14,7 @@ if str(BACKEND_ROOT) not in sys.path:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import acquisition, datasets, engines, future, lab, prediction, simulation, site
+from api import acquisition, datasets, engines, future, lab, live, prediction, simulation, site
 from config.settings import get_settings
 
 settings = get_settings()
@@ -36,7 +36,16 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:8081",
+        "http://127.0.0.1:8081",
+        "http://localhost:19006",
+        "http://127.0.0.1:19006",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,6 +59,7 @@ app.include_router(site.router)
 app.include_router(lab.router)
 app.include_router(future.router)
 app.include_router(prediction.router)
+app.include_router(live.router)
 
 
 @app.get("/api/health")
@@ -58,6 +68,9 @@ def health() -> dict:
     return {
         "status": "ok",
         "service": "bhuvyom-acquisition",
+        "temperature_mode": "live_earthdata",
+        "database_used_for_temperature": False,
+        "live_temperature_endpoint": "/api/live/temperature",
         "earthdata_configured": s.has_earthdata_token,
         "supabase_configured": s.has_supabase,
         "cds_configured": s.has_cds,

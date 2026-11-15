@@ -18,7 +18,7 @@ function ScrollManager() {
   return null
 }
 
-const TITLES: Record<string, string> = { '/prediction': 'Prediction Engine — Bengaluru From Orbit', '/': 'Bengaluru From Orbit', '/lab': 'Simulation Lab — Bengaluru From Orbit', '/future': 'Future Earth — Bengaluru From Orbit', '/explore': 'Explorer — Bengaluru From Orbit' }
+const TITLES: Record<string, string> = { '/prediction': 'Prediction Engine — BhuVyom', '/': 'BhuVyom', '/lab': 'Simulation Lab — BhuVyom', '/future': 'Future Earth — BhuVyom', '/explore': 'Explorer — BhuVyom' }
 function Title() { const { pathname } = useLocation(); useEffect(() => { document.title = TITLES[pathname] ?? TITLES['/'] }, [pathname]); return null }
 
 createRoot(document.getElementById('root')!).render(

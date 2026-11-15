@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Temperature, rainfall, humidity and wind over Bengaluru — from NASA satellites and models." />
-    <title>Bengaluru From Orbit</title>
+    <title>BhuVyom</title>
+    <!-- Homepage UI lives on the URANUS static site (not this React shell). -->
+    <script>
+      (function () {
+        var path = location.pathname || '/';
+        if (path === '/' || path === '/index.html') {
+          location.replace(location.protocol + '//' + location.hostname + ':8080/');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

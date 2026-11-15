@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Data sources — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600&amp;family=Poppins:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#050506}
+a{color:#7FE0F0;text-decoration:none}a:hover{color:#B8F0F8}
+button{font:inherit;color:inherit;cursor:pointer}
+input[type=range]{accent-color:#7FE0F0}
+select{font:inherit}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 1400px; display: flex; flex-direction: column; background: #050506; color: #F2F2F2; font-family: Poppins, sans-serif">
+<header style="display: flex; align-items: center; gap: 10px; padding: 52px 20px 10px">
+<a href="Main.dc.html" aria-label="Back" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; color: #F2F2F2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="flex: 1; font-family: Jura, sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #F2F2F2">DATA SOURCES</div>
+<button type="button" aria-label="Sound off" style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.14em; color: #C9C9CE"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path d="M17 9l4 6"></path><path d="M21 9l-4 6"></path></svg>OFF</button>
+</header>
+<main style="display: flex; flex-direction: column; gap: 20px; padding: 4px 20px 28px">
+  <section style="display: flex; flex-direction: column; gap: 10px">
+    <div style="font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.28em; color: #7FE0F0">DATA SOURCES</div>
+    <h1 style="margin: 0; font-family: Jura, sans-serif; font-weight: 300; font-size: 34px; line-height: 1.05; letter-spacing: 0.05em">BUILT ON NASA</h1>
+    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #A0A0A8">Every layer names where it came from, how often it updates, and how fine its grid is.</p>
+  </section>
+
+  <section aria-label="NASA sources" style="display: flex; flex-direction: column; gap: 10px">
+    <sc-for list="{{nasa}}" as="d" hint-placeholder-count="3">
+      <button type="button" onClick="{{d.toggle}}" aria-expanded="{{d.open}}" style="display: flex; flex-direction: column; gap: 12px; width: 100%; padding: 18px; border-radius: 22px; text-align: left; {{d.ring}}">
+        <span style="display: flex; align-items: center; gap: 12px; width: 100%">
+          <span style="display: flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px; border-radius: 14px; background: rgba(127,224,240,0.10); color: #7FE0F0; font-family: Jura, sans-serif; font-size: 13px; font-weight: 600">{{d.badge}}</span>
+          <span style="flex: 1; font-family: Jura, sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.03em; color: #F2F2F2">{{d.name}}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A0A0A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{d.rot}}deg)"><path d="M6 9l6 6 6-6"></path></svg>
+        </span>
+        <span style="font-size: 13px; line-height: 1.55; color: #A0A0A8">{{d.desc}}</span>
+        <span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%">
+          <span style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04)"><span style="font-size: 11px; color: #8A8A92">Cadence</span><span style="font-size: 13px; color: #F2F2F2">{{d.cad}}</span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04)"><span style="font-size: 11px; color: #8A8A92">Resolution</span><span style="font-size: 13px; color: #F2F2F2">{{d.res}}</span></span>
+        </span>
+        <sc-if value="{{d.isOpen}}" hint-placeholder-val="{{ false }}">
+          <span style="display: flex; flex-wrap: wrap; gap: 6px">
+            <sc-for list="{{d.feeds}}" as="f" hint-placeholder-count="3"><span style="padding: 5px 10px; border-radius: 999px; background: rgba(127,224,240,0.08); font-size: 11px; color: #7FE0F0">{{f}}</span></sc-for>
+          </span>
+        </sc-if>
+      </button>
+    </sc-for>
+  </section>
+
+  <section aria-labelledby="alsoTitle" style="display: flex; flex-direction: column; gap: 10px">
+    <h2 id="alsoTitle" style="margin: 0; font-family: Jura, sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.24em; color: #C9C9CE">ALSO IN THE APP</h2>
+    <div style="border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08)">
+      <sc-for list="{{also}}" as="a" hint-placeholder-count="7">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border-top: 1px solid rgba(255,255,255,0.06)">
+          <span style="font-size: 13px; color: #F2F2F2">{{a.n}}</span>
+          <span style="font-size: 11px; color: #A0A0A8; text-align: right">{{a.u}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 18px; background: rgba(233,161,90,0.08); border: 1px solid rgba(233,161,90,0.25)">
+    <div style="font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.22em; color: #E9A15A">HONEST DATA</div>
+    <div style="font-size: 13px; line-height: 1.55; color: #C9C9CE">Air temperature and land surface temperature are never mixed. Missing records show as “No record”, never as zero.</div>
+  </section>
+</main>
+<nav aria-label="Main" style="margin-top: auto; position: sticky; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 26px; background: rgba(8,8,10,0.92); backdrop-filter: blur(18px); border-top: 1px solid rgba(255,255,255,0.08)">
+<a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #7FE0F0; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: rgba(127,224,240,0.10)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M10 21v-6h4v6"></path></svg></span>Home</a>
+<a href="Systems.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect></svg></span>Systems</a>
+<a href="Simulate.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"></path><path d="M18 6h2"></path><circle cx="16" cy="6" r="2"></circle><path d="M4 12h3"></path><path d="M11 12h9"></path><circle cx="9" cy="12" r="2"></circle><path d="M4 18h12"></path><path d="M20 18h0"></path><circle cx="18" cy="18" r="2"></circle></svg></span>Simulate</a>
+<a href="Compare.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><path d="M12 4v16"></path><path d="M7 10l-2 2 2 2"></path><path d="M17 10l2 2-2 2"></path></svg></span>Compare</a>
+<a href="Forecast.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; min-height: 48px; justify-content: center; color: #A0A0A8; font-family: Poppins, sans-serif; font-size: 11px; letter-spacing: 0.02em"><span style="display: flex; align-items: center; justify-content: center; width: 46px; height: 28px; border-radius: 14px; background: transparent"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 3 8-8"></path><path d="M15 7h5v5"></path><path d="M3 21h18"></path></svg></span>Forecast</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1400}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { open: 0 }; }
+  renderVals() {
+    const N = [
+      { badge: 'PWR', name: 'NASA POWER', desc: 'Air temperature, humidity, wind, solar radiation, cloud amount and corrected precipitation from MERRA-2 and CERES.', cad: 'Daily · monthly', res: '0.5° × 0.625°', feeds: ['T2M', 'RH2M', 'WS2M', 'ALLSKY', 'CLOUD_AMT', 'PRECTOTCORR'] },
+      { badge: 'MOD', name: 'MODIS · MOD11A2', desc: 'Land surface temperature and surface emissivity from the Terra satellite, day and night passes.', cad: '8-day composite', res: '1 km', feeds: ['Land surface temperature', 'Emissivity', 'Day / night'] },
+      { badge: 'GPM', name: 'GPM IMERG', desc: 'Merged satellite precipitation estimates from the Global Precipitation Measurement constellation.', cad: '30 minutes', res: '0.1°', feeds: ['Rainfall', 'Rainfall intensity', 'Extreme rainfall'] }
+    ];
+    const o = this.state.open;
+    return {
+      nasa: N.map((d, i) => ({ ...d, open: String(i === o), isOpen: i === o, rot: i === o ? 180 : 0,
+        ring: i === o ? 'background: linear-gradient(150deg, rgba(91,140,255,0.16), rgba(255,255,255,0.02)); border: 1px solid rgba(127,224,240,0.32)' : 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08)',
+        toggle: () => this.setState({ open: i === o ? -1 : i }) })),
+      also: [
+        { n: 'Open-Meteo', u: 'Live · ECMWF / GFS models' },
+        { n: 'ERA5 reanalysis', u: 'Record 1980–2025' },
+        { n: 'Copernicus CAMS', u: 'PM2.5 air quality' },
+        { n: 'IPCC AR6 WGI', u: 'Warming scenarios to 2100' },
+        { n: 'BhuVyom engine', u: '12-month forecasts' },
+        { n: 'NASA Black Marble', u: 'Night basemap (VIIRS)' },
+        { n: 'geoBoundaries', u: 'State & district outlines' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-15T13:55:00Z"},"title":"Bengaluru From Orbit — App UI","launch":{"view":"canvas"},"pages":[],
+"boards":{
+"Main.dc.html":{"x":0,"y":0,"w":390,"h":1560,"title":"01 · Home","is_interactive":true,"radius":44},
+"Layers.dc.html":{"x":470,"y":0,"w":390,"h":1520,"title":"02 · Data layers","is_interactive":true,"radius":44},
+"Systems.dc.html":{"x":940,"y":0,"w":390,"h":1900,"title":"03 · 16 Systems","is_interactive":true,"radius":44},
+"Simulate.dc.html":{"x":1410,"y":0,"w":390,"h":2200,"title":"04 · Simulation","is_interactive":true,"radius":44},
+"Compare.dc.html":{"x":0,"y":2620,"w":390,"h":2500,"title":"05 · Compare","is_interactive":true,"radius":44},
+"Forecast.dc.html":{"x":470,"y":2620,"w":390,"h":2450,"title":"06 · Forecast","is_interactive":true,"radius":44},
+"Data.dc.html":{"x":940,"y":2620,"w":390,"h":1400,"title":"07 · Data sources","is_interactive":true,"radius":44},
+"Pipeline.dc.html":{"x":1410,"y":2620,"w":390,"h":1420,"title":"08 · Pipeline","is_interactive":true,"radius":44}
+},
+"order":["Main.dc.html","Layers.dc.html","Systems.dc.html","Simulate.dc.html","Compare.dc.html","Forecast.dc.html","Data.dc.html","Pipeline.dc.html"],
+"notes":{
+"row1":{"x":0,"y":-320,"text":"Bengaluru From Orbit · app — Home, Layers, Systems, Simulation","kind":"title1","maxW":1800},
+"row2":{"x":0,"y":2300,"text":"Compare, Forecast, Data sources, Pipeline","kind":"title1","maxW":1800},
+"nav":{"x":1880,"y":0,"w":360,"text":"Navigation\n\nBottom tabs: Home · Systems · Simulate · Compare · Forecast.\n\nLayers, Data sources and Pipeline open from Home (with a back arrow), matching the website's top nav.\n\nPress Play on any screen to click through.","size":"m","fill":"teal"}
+},
+"designSystems":[]}

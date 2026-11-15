@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Future predictions — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Jura";src:url("/_blob/74ac33ad597c75f6f5cce3ca148bf5c6") format("woff2");font-weight:300 700;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/be326da0939a8ed4475105466956b08c") format("woff2");font-weight:300;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/a85cab6fcd19b140ca19b662e93f465d") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/016814f1086ea4b56998dd5e8b0629ab") format("woff2");font-weight:500;font-display:swap}
+body { margin: 0; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow-x: hidden; }
+a { color: #7FE0F0; transition: color 0.2s; }
+a:hover { color: #F2F2F2; }
+button { font-family: inherit; }
+@keyframes eqA { 0%,100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+@keyframes eqB { 0%,100% { transform: scaleY(.8); } 50% { transform: scaleY(.3); } }
+@keyframes eqC { 0%,100% { transform: scaleY(.5); } 50% { transform: scaleY(.95); } }
+@keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(127,224,240,0.4); }
+
+/* Sub-page shell: same black page and navigation bar as the home page */
+.sp-page { position: relative; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow: hidden; }
+.sp-page > header { position: absolute; left: 0; right: 0; top: 18px; z-index: 30; padding: 0 20px; }
+.sp-footer { max-width: 1320px; margin: 0 auto; padding: 28px 32px 56px; box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 12px; color: #A0A0A8; }
+.sp-footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.sp-footer a { color: #C9C9CE; text-decoration: none; }
+.sp-footer a:hover { color: #7FE0F0; }
+.sp-foot-wrap { padding: 0 0; }
+@media (max-width: 820px) { .sp-footer { padding: 24px 20px 40px; } }
+
+/* ==========================================================================
+   Future predictions — the prediction engine's output, shown plainly.
+   Flat, solid colours; space instead of boxes. Reading order:
+   1 the headline number → 2 the 5-year chart → 3 how far ahead to trust it → 4 beyond 12 months → 5 how it works
+   ========================================================================== */
+.pp-wrap { max-width: 1320px; margin: 0 auto; padding-left: 32px; padding-right: 32px; box-sizing: border-box; }
+.pp-eyebrow { margin: 0; font-family: Jura, sans-serif; font-size: 14px; letter-spacing: 0.36em; color: #7FE0F0; text-transform: uppercase; }
+.pp-page :focus-visible { outline: 2px solid #7FE0F0; outline-offset: 2px; }
+.pp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Intro + the still Earth on the right */
+.pp-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 24px; align-items: center; padding-top: 160px; padding-bottom: 72px; }
+.pp-top-l { min-width: 0; }
+.pp-intro { padding-bottom: 56px; }
+.pp-earth { position: relative; margin: 0; width: 100%; aspect-ratio: 1 / 1; pointer-events: none; }
+.pp-earth img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+.pp-earth img.on { opacity: 1; }
+.pp-earth figcaption { position: absolute; left: 0; right: 0; bottom: 1%; text-align: center; font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.24em; color: #6E6E76; text-transform: uppercase; }
+.pp-back { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 44px; color: #A0A0A8; font-size: 13px; text-decoration: none; }
+.pp-back:hover { color: #F2F2F2; }
+.pp-back svg { transition: transform .2s; }
+.pp-back:hover svg { transform: translateX(-3px); }
+.pp-intro h1 { margin: 18px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(40px, 5.2vw, 72px); letter-spacing: 0.05em; line-height: 1; }
+.pp-intro h1 span { color: #7FE0F0; }
+.pp-lede { margin: 30px 0 0; max-width: 560px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+
+/* Controls */
+.pp-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+.pp-tabs { display: flex; gap: 8px; }
+.pp-tab { height: 40px; padding: 0 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.16); background: transparent; color: #C9C9CE; font-size: 13px; cursor: pointer; transition: color .2s, border-color .2s; }
+.pp-tab:hover { color: #F2F2F2; border-color: rgba(255,255,255,0.4); }
+.pp-tab[aria-pressed="true"] { background: #7FE0F0; border-color: #7FE0F0; color: #000; font-weight: 500; }
+.pp-place { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #A0A0A8; }
+.pp-place select { -webkit-appearance: none; appearance: none; height: 40px; padding: 0 40px 0 18px; border-radius: 20px; background: #050506 url("/_blob/340b3491aa10a74a15a694f61741f407") no-repeat right 16px center; border: 1px solid rgba(255,255,255,0.16); color: #F2F2F2; font-size: 13px; font-family: Poppins, sans-serif; cursor: pointer; }
+.pp-place select:hover { border-color: rgba(255,255,255,0.4); }
+.pp-place select option { background: #050506; }
+
+/* 1 · Headline numbers */
+.pp-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: end; padding-bottom: 96px; }
+.pp-k { font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.3em; color: #7FE0F0; text-transform: uppercase; }
+.pp-big { margin-top: 14px; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(64px, 9vw, 128px); line-height: 0.92; letter-spacing: 0.01em; color: #F2F2F2; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pp-big small { font-size: 0.34em; letter-spacing: 0.04em; color: #7FE0F0; margin-left: 10px; }
+.pp-mid { margin-top: 12px; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(36px, 4vw, 56px); line-height: 1; color: #F2F2F2; font-variant-numeric: tabular-nums; }
+.pp-mid small { font-size: 0.4em; color: #A0A0A8; margin-left: 8px; letter-spacing: 0.04em; }
+.pp-sub { margin-top: 18px; font-size: 13px; line-height: 1.65; color: #A0A0A8; max-width: 380px; text-wrap: pretty; }
+.pp-sub b { color: #E9A15A; font-weight: 400; font-family: Jura, sans-serif; letter-spacing: 0.04em; margin-right: 6px; }
+
+/* 2 · Chart */
+.pp-chart-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding-bottom: 28px; }
+.pp-h2 { margin: 14px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(30px, 3.4vw, 44px); letter-spacing: 0.04em; line-height: 1.08; }
+.pp-legend { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 12px; color: #A0A0A8; }
+.pp-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.pp-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+.pp-legend i.band { height: 10px; border: 0; width: 18px; }
+.pp-legend i.dash { border-top-style: dashed; border-width: 1.5px; }
+.pp-legend i.dot { width: 8px; height: 8px; border: 0; border-radius: 50%; }
+.pp-chart { position: relative; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
+.pp-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pp-chart text { font-family: Jura, sans-serif; fill: #6E6E76; font-size: 11px; letter-spacing: 0.08em; }
+.pp-chart .ax { stroke: rgba(255,255,255,0.07); }
+.pp-tip { position: absolute; z-index: 5; pointer-events: none; display: none; min-width: 190px; padding: 12px 14px; border-radius: 12px; background: #0B0B0D; border: 1px solid rgba(255,255,255,0.16); font-size: 12px; line-height: 1.6; color: #C9C9CE; }
+.pp-tip b { display: block; margin-bottom: 4px; font-family: Jura, sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.14em; color: #F2F2F2; text-transform: uppercase; }
+.pp-tip em { font-style: normal; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.pp-note { margin: 22px 0 0; max-width: 760px; font-size: 13px; line-height: 1.7; color: #8A8A92; text-wrap: pretty; }
+.pp-check { margin-top: 22px; font-size: 14px; line-height: 1.7; color: #C9C9CE; max-width: 760px; }
+.pp-check b { color: #E9A15A; font-weight: 400; font-family: Jura, sans-serif; letter-spacing: 0.04em; }
+
+/* 3 · Trust by horizon */
+.pp-section { padding-top: 160px; }
+.pp-two { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 96px; align-items: start; }
+.pp-two p { margin: 22px 0 0; max-width: 440px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+.pp-hz { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pp-hz th { text-align: left; padding: 0 0 14px; font-family: Jura, sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.24em; color: #6E6E76; text-transform: uppercase; }
+.pp-hz td { padding: 11px 0; border-top: 1px solid rgba(255,255,255,0.07); color: #C9C9CE; vertical-align: middle; }
+.pp-hz td:first-child { font-family: Jura, sans-serif; letter-spacing: 0.08em; color: #F2F2F2; width: 56px; }
+.pp-hz .bar { display: flex; align-items: center; gap: 12px; min-width: 150px; }
+.pp-hz .bar i { display: block; height: 6px; border-radius: 3px; background: #7FE0F0; flex-shrink: 0; }
+.pp-hz .bar i.none { background: #2A2A30; }
+.pp-hz .bar span { font-family: Jura, sans-serif; color: #F2F2F2; font-variant-numeric: tabular-nums; }
+.pp-hz .dim { color: #8A8A92; }
+.pp-hz-wrap { overflow-x: auto; }
+
+/* 4 · Beyond 12 months */
+.pp-scen { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.pp-scen th { text-align: left; padding: 0 0 16px; font-family: Jura, sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.24em; color: #6E6E76; text-transform: uppercase; }
+.pp-scen td { padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.07); vertical-align: baseline; }
+.pp-scen td:first-child { font-size: 14px; color: #C9C9CE; }
+.pp-scen td:first-child small { display: block; margin-top: 3px; font-size: 11px; color: #6E6E76; letter-spacing: 0.04em; }
+.pp-scen .v { font-family: Jura, sans-serif; font-weight: 300; font-size: 30px; color: #F2F2F2; font-variant-numeric: tabular-nums; }
+.pp-scen .v small { display: block; margin-top: 4px; font-size: 12px; color: #E9A15A; letter-spacing: 0.04em; }
+.pp-flag { margin-top: 34px; padding-left: 18px; border-left: 2px solid #E9A15A; font-size: 13px; line-height: 1.7; color: #A0A0A8; max-width: 640px; text-wrap: pretty; }
+.pp-flag b { color: #F2F2F2; font-weight: 500; }
+
+/* 5 · How it works */
+.pp-how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px; padding-top: 72px; }
+.pp-how h3 { margin: 0; font-family: Jura, sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.3em; color: #7FE0F0; text-transform: uppercase; }
+.pp-how ul { list-style: none; margin: 22px 0 0; padding: 0; }
+.pp-how li { padding: 11px 0; border-top: 1px solid rgba(255,255,255,0.07); font-size: 13px; line-height: 1.65; color: #B4B4BC; text-wrap: pretty; }
+.pp-how li b { color: #F2F2F2; font-weight: 500; }
+.pp-source { margin-top: 56px; padding-bottom: 150px; max-width: 820px; font-size: 11px; line-height: 1.75; color: #6E6E76; }
+
+@media (prefers-reduced-motion: reduce) { 
+@media (max-width: 1100px) { .pp-top { padding-top: 210px; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); } }
+@media (max-width: 1000px) {
+  .pp-hero { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .pp-hero > :first-child { grid-column: 1 / -1; }
+  .pp-two { gap: 56px; }
+  .pp-how { gap: 40px; }
+}
+@media (max-width: 820px) {
+  .pp-wrap { padding-left: 20px; padding-right: 20px; }
+  .pp-top { padding-top: 250px; padding-bottom: 56px; }
+  .pp-intro { padding-bottom: 40px; }
+  .pp-two { grid-template-columns: 1fr; gap: 40px; }
+  .pp-section { padding-top: 110px; }
+  .pp-how { grid-template-columns: 1fr; }
+  .pp-hero { padding-bottom: 64px; }
+}
+@media (max-width: 560px) { .pp-top { padding-top: 330px; } }
+@media (max-width: 900px) { .pp-top { grid-template-columns: 1fr; } .pp-earth { max-width: 420px; justify-self: center; } }
+@media (prefers-reduced-motion: reduce) { .pp-earth img { transition: none; } }
+
+</style>
+</helmet>
+<div class="sp-page" style="width: 100%; min-height: 4366px">
+<header style="position:absolute;left:0;right:0;top:18px;z-index:3;padding:0 20px">
+    <div style="max-width:1320px;margin:0 auto;padding:10px 12px 10px 28px;min-height:68px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-radius:34px;background:linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(14,16,20,0.48) 40%, rgba(6,7,10,0.64) 100%);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.05), 0 10px 40px rgba(0,0,0,0.45)">
+      <a href="Home.dc.html" style="display:flex;align-items:baseline;gap:14px;text-decoration:none;color:#F2F2F2">
+        <span style="font-family:Jura, sans-serif;font-size:15px;letter-spacing:0.22em">BENGALURU FROM ORBIT</span>
+        <span aria-hidden="true" style="width:6px;height:6px;border-radius:3px;background:#E9A15A"></span>
+      </a>
+      <nav aria-label="Primary" style="display:flex;gap:4px;flex-wrap:wrap">
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Layers</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">16 Systems</a>
+        <a href="Simulation.dc.html" aria-current="page" style="padding:12px 14px;color:#7FE0F0;text-decoration:none;font-size:13px">Simulations</a>
+        <a href="Compare.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Compare</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Data</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Pipeline</a>
+      </nav>
+      <button type="button" data-action="sound" aria-pressed="false" aria-label="Turn space sound on" style="height:44px;padding:0 18px;border-radius:22px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#F2F2F2;font-size:12px;display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span aria-hidden="true" style="display:flex;align-items:center;gap:2px;height:14px">
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqB"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqC"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+        </span><span data-bind="soundText">Sound off</span>
+      </button>
+    </div>
+  </header>
+<sc-if value="{{isAir}}" hint-placeholder-val="{{true}}">
+<main class="pp-page">
+
+  <div class="pp-wrap pp-top">
+    <div class="pp-top-l">
+    <div class="pp-intro">
+      <a class="pp-back" href="Simulation.dc.html"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 4 6l4 4"></path></svg>Back to the simulation</a>
+      <p class="pp-eyebrow">Future predictions</p>
+      <h1>WHAT THE ENGINE<br/><span>EXPECTS</span></h1>
+      <p class="pp-lede">Forecasts from the BhuVyom prediction engine, trained on 45 years of NASA POWER monthly data. Every number comes with a range, and a score for how far ahead it can be trusted.</p>
+    </div>
+
+    <div class="pp-controls">
+      <div class="pp-tabs" role="group" aria-label="Variable">
+        <button type="button" class="pp-tab" data-var="air" onClick="{{pickAir}}" aria-pressed="true">Air temperature</button>
+        <button type="button" class="pp-tab" data-var="rain" onClick="{{pickRain}}" aria-pressed="false">Rainfall</button>
+      </div>
+      <label class="pp-place">Place
+        <select id="pp-cell" aria-label="Place"><option value="p_14.000_76.250">Chitradurga — 14.0° N, 76.25° E</option><option value="p_14.000_76.875">Open country — 14.0° N, 76.88° E</option><option value="p_14.000_77.500">Open country — 14.0° N, 77.50° E</option><option value="p_14.000_78.125">Open country — 14.0° N, 78.13° E</option><option value="p_14.000_78.750">Open country — 14.0° N, 78.75° E</option><option value="p_13.500_76.250">Open country — 13.5° N, 76.25° E</option><option value="p_13.500_76.875">Tumakuru — 13.5° N, 76.88° E</option><option value="p_13.500_77.500">Chikkaballapura — 13.5° N, 77.50° E</option><option value="p_13.500_78.125">Open country — 13.5° N, 78.13° E</option><option value="p_13.500_78.750">Open country — 13.5° N, 78.75° E</option><option value="p_13.000_76.250">Hassan — 13.0° N, 76.25° E</option><option value="p_13.000_76.875">Open country — 13.0° N, 76.88° E</option><option value="p_13.000_77.500" selected="">Bengaluru — 13.0° N, 77.50° E</option><option value="p_13.000_78.125">Kolar — 13.0° N, 78.13° E</option><option value="p_13.000_78.750">Open country — 13.0° N, 78.75° E</option><option value="p_12.500_76.250">Open country — 12.5° N, 76.25° E</option><option value="p_12.500_76.875">Mysuru · Mandya — 12.5° N, 76.88° E</option><option value="p_12.500_77.500">Ramanagara — 12.5° N, 77.50° E</option><option value="p_12.500_78.125">Hosur — 12.5° N, 78.13° E</option><option value="p_12.500_78.750">Open country — 12.5° N, 78.75° E</option><option value="p_12.000_76.250">Open country — 12.0° N, 76.25° E</option><option value="p_12.000_76.875">Chamarajanagar — 12.0° N, 76.88° E</option><option value="p_12.000_77.500">Open country — 12.0° N, 77.50° E</option><option value="p_12.000_78.125">Open country — 12.0° N, 78.13° E</option><option value="p_12.000_78.750">Open country — 12.0° N, 78.75° E</option></select>
+      </label>
+    </div>
+    </div>
+    <!-- A still Earth that follows the tab: clear sky for temperature, clouds for rainfall -->
+    <figure class="pp-earth" aria-hidden="true">
+      <img src="/_blob/d2e71c37dcca1d8b0ceed25abf07cd9c" data-earth="air" class="on" alt="" width="1400" height="1400" decoding="async">
+      <img src="/_blob/67d4db5f2a86e0ca449cb2d38654d95e" data-earth="rain" alt="" width="1400" height="1400" decoding="async">
+      <figcaption id="pp-earth-cap">Clear sky · NASA Blue Marble</figcaption>
+    </figure>
+  </div>
+
+  <!-- 1 · Headline numbers -->
+  <div class="pp-wrap pp-hero" aria-live="polite">
+    <div>
+      <div class="pp-k" id="pp-k1">Next month · December 2026</div>
+      <div class="pp-big" id="pp-v1">20.1<small>°C</small></div>
+      <div class="pp-sub" id="pp-s1"><b>80 % range</b>19.3–21.6 °C · 95 % range 18.6–22.3 °C.<br/>12 months after the forecast starts (December 2025). At this distance the engine falls back to the monthly average.</div>
+    </div>
+    <div>
+      <div class="pp-k" id="pp-k2">All of 2026</div>
+      <div class="pp-mid" id="pp-v2">23.7<small>°C mean</small></div>
+      <div class="pp-sub" id="pp-s2"><b>±0.0 °C</b>vs the 1981–2025 average for these months (23.7 °C). Average of the 12 monthly forecasts.</div>
+    </div>
+    <div>
+      <div class="pp-k" id="pp-k3">Typical miss, 1 month ahead</div>
+      <div class="pp-mid" id="pp-v3">±0.6<small>°C</small></div>
+      <div class="pp-sub" id="pp-s3">Average error on months the engine had never seen (2018–2024), across all 25 cells. The 80 % range held 78 % of the time.</div>
+    </div>
+  </div>
+
+  <!-- 2 · Chart -->
+  <div class="pp-wrap">
+    <div class="pp-chart-head">
+      <div>
+        <p class="pp-eyebrow">Five years at a glance</p>
+        <h2 class="pp-h2" id="pp-h2">Air temperature: observed, then forecast</h2>
+      </div>
+      <div class="pp-legend" aria-hidden="true">
+        <span><i style="border-color:#F2F2F2"></i>Observed (NASA POWER)</span>
+        <span><i style="border-color:#7FE0F0"></i>Engine forecast</span>
+        <span><i class="band" style="background:rgba(127,224,240,0.28)"></i>80 % range</span>
+        <span><i class="band" style="background:rgba(127,224,240,0.12)"></i>95 % range</span>
+        <span><i class="dash" style="border-color:#8A8A92"></i>Climatology</span>
+        <span><i class="dot" style="background:#E9A15A"></i>Actual 2026 (ERA5)</span>
+      </div>
+    </div>
+    <div class="pp-chart" id="pp-chart" role="img" aria-label="Air temperature at Bengaluru: observed 2022–2025, engine forecast for 2026, ranging 20.1 °C to 28.5 °C."><div><svg viewBox="0 0 1256 420" aria-hidden="true"><line class="ax" x1="60" x2="1238" y1="382.0" y2="382.0"></line><text x="50" y="386.0" text-anchor="end">15</text><line class="ax" x1="60" x2="1238" y1="293.5" y2="293.5"></line><text x="50" y="297.5" text-anchor="end">20</text><line class="ax" x1="60" x2="1238" y1="205.0" y2="205.0"></line><text x="50" y="209.0" text-anchor="end">25</text><line class="ax" x1="60" x2="1238" y1="116.5" y2="116.5"></line><text x="50" y="120.5" text-anchor="end">30</text><line class="ax" x1="60" x2="1238" y1="28.0" y2="28.0"></line><text x="50" y="32.0" text-anchor="end">35</text><line class="ax" x1="60.0" x2="60.0" y1="28" y2="382"></line><text x="60.0" y="408" text-anchor="start" dx="4">2022</text><line class="ax" x1="299.6" x2="299.6" y1="28" y2="382"></line><text x="299.6" y="408" text-anchor="start" dx="4">2023</text><line class="ax" x1="539.2" x2="539.2" y1="28" y2="382"></line><text x="539.2" y="408" text-anchor="start" dx="4">2024</text><line class="ax" x1="778.8" x2="778.8" y1="28" y2="382"></line><text x="778.8" y="408" text-anchor="start" dx="4">2025</text><line class="ax" x1="1018.4" x2="1018.4" y1="28" y2="382"></line><text x="1018.4" y="408" text-anchor="start" dx="4">2026</text><text x="60" y="14" text-anchor="start">°C</text><line x1="1018.4" x2="1018.4" y1="28" y2="382" stroke="#7FE0F0" stroke-opacity=".5" stroke-dasharray="3 4"></line><text x="1026.4" y="18" style="fill:#7FE0F0">FORECAST →</text><line x1="1218.0" x2="1218.0" y1="28" y2="382" stroke="#E9A15A" stroke-opacity=".7"></line><text x="1218.0" y="396" text-anchor="middle" style="fill:#E9A15A" dy="-3">NOW</text><path d="M1018.4 244.5L1038.3 193.8L1058.3 135.6L1078.3 104.6L1098.2 129.0L1118.2 182.6L1138.2 196.2L1158.1 199.0L1178.1 201.5L1198.1 213.1L1218.0 236.2L1238.0 252.7L1238.0 318.5L1218.0 302.0L1198.1 278.9L1178.1 267.3L1158.1 264.8L1138.2 262.1L1118.2 248.2L1098.2 194.7L1078.3 168.5L1058.3 199.0L1038.3 253.6L1018.4 298.9Z" fill="#7FE0F0" fill-opacity=".12"></path><path d="M1018.4 254.0L1038.3 204.2L1058.3 147.1L1078.3 115.7L1098.2 140.6L1118.2 194.3L1138.2 208.1L1158.1 210.8L1178.1 213.3L1198.1 224.9L1218.0 248.0L1238.0 264.4L1238.0 306.2L1218.0 289.7L1198.1 266.6L1178.1 255.0L1158.1 252.6L1138.2 249.8L1118.2 236.0L1098.2 182.2L1078.3 156.8L1058.3 187.7L1038.3 242.9L1018.4 289.2Z" fill="#7FE0F0" fill-opacity=".26"></path><path d="M1018.4 277.9L1038.3 230.3L1058.3 173.9L1078.3 142.8L1098.2 167.7L1118.2 221.4L1138.2 235.1L1158.1 237.9L1178.1 240.3L1198.1 251.9L1218.0 275.0L1238.0 291.5" fill="none" stroke="#8A8A92" stroke-width="1.5" stroke-dasharray="5 4"></path><path d="M60.0 278.3L80.0 248.0L99.9 180.6L119.9 152.1L139.9 192.8L159.8 227.7L179.8 240.2L199.8 243.2L219.7 249.8L239.7 260.2L259.7 288.0L279.6 293.1L299.6 314.4L319.6 260.2L339.5 207.5L359.5 151.9L379.5 172.3L399.4 194.6L419.4 223.8L439.4 198.1L459.3 233.3L479.3 231.7L499.3 237.7L519.2 252.8L539.2 240.4L559.2 198.3L579.1 152.1L599.1 111.0L619.1 157.0L639.0 221.1L659.0 228.0L678.9 224.5L698.9 224.1L718.9 236.9L738.8 260.2L758.8 265.5L778.8 280.6L798.7 233.7L818.7 166.2L838.7 146.6L858.6 189.1L878.6 217.4L898.6 222.3L918.5 235.4L938.5 237.9L958.5 242.5L978.4 272.8L998.4 286.1" fill="none" stroke="#F2F2F2" stroke-width="1.8" stroke-linejoin="round"></path><path d="M1018.4 274.9L1038.3 228.6L1058.3 172.9L1078.3 142.3L1098.2 167.4L1118.2 221.2L1138.2 235.0L1158.1 237.8L1178.1 240.3L1198.1 251.9L1218.0 275.0L1238.0 291.5" fill="none" stroke="#7FE0F0" stroke-width="2.2" stroke-linejoin="round"></path><circle cx="1018.4" cy="274.9" r="2.6" fill="#7FE0F0"></circle><circle cx="1038.3" cy="228.6" r="2.6" fill="#7FE0F0"></circle><circle cx="1058.3" cy="172.9" r="2.6" fill="#7FE0F0"></circle><circle cx="1078.3" cy="142.3" r="2.6" fill="#7FE0F0"></circle><circle cx="1098.2" cy="167.4" r="2.6" fill="#7FE0F0"></circle><circle cx="1118.2" cy="221.2" r="2.6" fill="#7FE0F0"></circle><circle cx="1138.2" cy="235.0" r="2.6" fill="#7FE0F0"></circle><circle cx="1158.1" cy="237.8" r="2.6" fill="#7FE0F0"></circle><circle cx="1178.1" cy="240.3" r="2.6" fill="#7FE0F0"></circle><circle cx="1198.1" cy="251.9" r="2.6" fill="#7FE0F0"></circle><circle cx="1218.0" cy="275.0" r="2.6" fill="#7FE0F0"></circle><circle cx="1238.0" cy="291.5" r="2.6" fill="#7FE0F0"></circle></svg></div></div>
+    
+    <p class="pp-check" id="pp-check"><b>Reality check unavailable</b> — the 2026 actuals could not be loaded (needs a connection to the Open-Meteo archive).</p>
+    <p class="pp-note" id="pp-chart-note">The engine forecasts from December 2025, so months through now can be checked against what actually happened. The grey dashed line is the 1981–2025 average for each month: where the forecast sits on it, the engine has nothing better to say.</p>
+  </div>
+
+  <!-- 3 · How far ahead -->
+  <div class="pp-wrap pp-section">
+    <div class="pp-two">
+      <div>
+        <p class="pp-eyebrow">How far ahead</p>
+        <h2 class="pp-h2">Better than the average for 4 months. After that, it’s the average.</h2>
+        <p id="pp-trust-text">Temperature at 2 Meters: the selected models beat climatology on held-out 2018–2025 data at horizons 1, 2, 3, 4 month(s) (MAE skill up to 26%). Beyond that, forecasts carry no more information than the monthly climatology. 80% prediction intervals covered 69%–78% of held-out observations across horizons (nominal 80%). Ranges are built from the model’s own past misses on months it had not seen.</p>
+      </div>
+      <div class="pp-hz-wrap">
+        <table class="pp-hz">
+          <caption class="pp-sr">Forecast skill by months ahead</caption>
+          <thead><tr><th scope="col">Months ahead</th><th scope="col">Model chosen</th><th scope="col">Better than average by</th><th scope="col">Typical error</th><th scope="col">80 % range hit</th></tr></thead>
+          <tbody id="pp-hz"><tr><td>1</td><td>Damped persistence</td><td><div class="bar"><i style="width:120px"></i><span>26 %</span></div></td><td class="dim">± 0.6 °C</td><td class="dim">78 %</td></tr><tr><td>2</td><td>Damped persistence</td><td><div class="bar"><i style="width:63px"></i><span>13 %</span></div></td><td class="dim">± 0.7 °C</td><td class="dim">76 %</td></tr><tr><td>3</td><td>Damped persistence</td><td><div class="bar"><i style="width:34px"></i><span>6 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">73 %</td></tr><tr><td>4</td><td>Damped persistence</td><td><div class="bar"><i style="width:18px"></i><span>2 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">71 %</td></tr><tr><td>5</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">69 %</td></tr><tr><td>6</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.9 °C</td><td class="dim">69 %</td></tr><tr><td>7</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.9 °C</td><td class="dim">69 %</td></tr><tr><td>8</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.9 °C</td><td class="dim">69 %</td></tr><tr><td>9</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">70 %</td></tr><tr><td>10</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">70 %</td></tr><tr><td>11</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">72 %</td></tr><tr><td>12</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 0.8 °C</td><td class="dim">74 %</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 · Beyond 12 months -->
+  <div class="pp-wrap pp-section">
+    <div class="pp-two">
+      <div>
+        <p class="pp-eyebrow">Beyond 12 months</p>
+        <h2 class="pp-h2" id="pp-scen-h">Warming scenarios to 2100</h2>
+        <p id="pp-scen-text">These figures are not computed by the prediction engine. They add the IPCC’s published central estimates of global warming, for each emissions scenario, to the average of the last four observed years at this place.</p>
+      </div>
+      <div id="pp-scen-wrap"><table class="pp-scen"><caption class="pp-sr">Estimated air temperature by scenario and year</caption><thead><tr><th scope="col">Scenario</th><th scope="col">2030</th><th scope="col">2050</th><th scope="col">2070</th><th scope="col">2100</th></tr></thead><tbody><tr><td>Low emissions<small>SSP1-2.6</small></td><td><div class="v">24.1<small>+0.2 °C</small></div></td><td><div class="v">24.3<small>+0.4 °C</small></div></td><td><div class="v">24.3<small>+0.5 °C</small></div></td><td><div class="v">24.4<small>+0.5 °C</small></div></td></tr><tr><td>Middle road<small>SSP2-4.5</small></td><td><div class="v">24.1<small>+0.2 °C</small></div></td><td><div class="v">24.6<small>+0.7 °C</small></div></td><td><div class="v">24.9<small>+1.1 °C</small></div></td><td><div class="v">25.5<small>+1.6 °C</small></div></td></tr><tr><td>High emissions<small>SSP5-8.5</small></td><td><div class="v">24.2<small>+0.3 °C</small></div></td><td><div class="v">25.0<small>+1.1 °C</small></div></td><td><div class="v">26.0<small>+2.1 °C</small></div></td><td><div class="v">27.5<small>+3.6 °C</small></div></td></tr></tbody></table><p class="pp-flag" style="margin-top:26px">Starting point: <b>23.9 °C</b>, the NASA POWER average for 2022–2025. Annual means; one year can run well above or below.</p><p class="pp-flag"><b>What the engine can add.</b> Its long-term branch (backend/engines/prediction/projections.py) summarises NASA NEX-GDDP-CMIP6 model runs, but that dataset has not been downloaded into this project yet, so it is not shown. Once it is, this section is replaced by the multi-model median and range.</p></div>
+    </div>
+  </div>
+
+  <!-- 5 · How it works -->
+  <div class="pp-wrap pp-section">
+    <p class="pp-eyebrow">How it works</p>
+    <h2 class="pp-h2">Tested on years it never saw</h2>
+    <div class="pp-how" id="pp-how"><div><h3>The data</h3><ul><li><b>NASA POWER monthly</b>, built on the MERRA-2 reanalysis.</li><li><b>1981-01–2025-12</b> used for training.</li><li><b>25 cells</b> of 0.5° × 0.625° (about 55 km) over Bengaluru and its surroundings. One cell covers a whole city.</li><li>Forecast starts after <b>December 2025</b>, the last month acquired.</li></ul></div><div><h3>The models</h3><ul><li>Six candidates compete: Monthly average, Same month last year, Damped persistence, Average + trend, Ridge regression, Gradient boosting.</li><li><b>One is picked for each distance ahead</b>, judged only on 2011–2017.</li><li>Scored on <b>2018-01–2024-12</b>, which the choice never saw. Picked here: Damped persistence (recent anomalies that fade out toward the average); Monthly average (the long-term average for that calendar month).</li><li>Ranges are the 10th–90th and 2.5th–97.5th percentiles of the chosen model’s past misses.</li></ul></div><div><h3>What it can’t do</h3><ul><li>Intervals describe historical out-of-sample error of this statistical model; they are not climate-scenario uncertainty.</li><li>~50 km cells: one cell covers all of Bengaluru; no neighbourhood-scale prediction.</li><li>Forecast issued from the last ACQUIRED month (Dec 2025); 2026 months already elapsed can be verified once acquired.</li><li>Not a weather forecast and not a climate projection.</li></ul></div></div>
+    <p class="pp-source" id="pp-source">Engine: aspect2729/bhuvyom · backend/engines/prediction · model version 1.0.0 · results generated 2026-11-13. Method basis: FPP3 (Hyndman &amp; Athanasopoulos 2021); Tashman 2000; Lei et al. 2018. Actual 2026 values: Open-Meteo archive (ERA5), fetched live. Scenario warming: IPCC AR6 WGI Table SPM.1, central estimates. NASA POWER and ERA5 are different reanalyses, so small offsets between them are expected.</p>
+  </div>
+
+</main>
+</sc-if>
+<sc-if value="{{isRain}}" hint-placeholder-val="{{false}}">
+<main class="pp-page">
+
+  <div class="pp-wrap pp-top">
+    <div class="pp-top-l">
+    <div class="pp-intro">
+      <a class="pp-back" href="Simulation.dc.html"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 4 6l4 4"></path></svg>Back to the simulation</a>
+      <p class="pp-eyebrow">Future predictions</p>
+      <h1>WHAT THE ENGINE<br/><span>EXPECTS</span></h1>
+      <p class="pp-lede">Forecasts from the BhuVyom prediction engine, trained on 45 years of NASA POWER monthly data. Every number comes with a range, and a score for how far ahead it can be trusted.</p>
+    </div>
+
+    <div class="pp-controls">
+      <div class="pp-tabs" role="group" aria-label="Variable">
+        <button type="button" class="pp-tab" data-var="air" onClick="{{pickAir}}" aria-pressed="false">Air temperature</button>
+        <button type="button" class="pp-tab" data-var="rain" onClick="{{pickRain}}" aria-pressed="true">Rainfall</button>
+      </div>
+      <label class="pp-place">Place
+        <select id="pp-cell" aria-label="Place"><option value="p_14.000_76.250">Chitradurga — 14.0° N, 76.25° E</option><option value="p_14.000_76.875">Open country — 14.0° N, 76.88° E</option><option value="p_14.000_77.500">Open country — 14.0° N, 77.50° E</option><option value="p_14.000_78.125">Open country — 14.0° N, 78.13° E</option><option value="p_14.000_78.750">Open country — 14.0° N, 78.75° E</option><option value="p_13.500_76.250">Open country — 13.5° N, 76.25° E</option><option value="p_13.500_76.875">Tumakuru — 13.5° N, 76.88° E</option><option value="p_13.500_77.500">Chikkaballapura — 13.5° N, 77.50° E</option><option value="p_13.500_78.125">Open country — 13.5° N, 78.13° E</option><option value="p_13.500_78.750">Open country — 13.5° N, 78.75° E</option><option value="p_13.000_76.250">Hassan — 13.0° N, 76.25° E</option><option value="p_13.000_76.875">Open country — 13.0° N, 76.88° E</option><option value="p_13.000_77.500" selected="">Bengaluru — 13.0° N, 77.50° E</option><option value="p_13.000_78.125">Kolar — 13.0° N, 78.13° E</option><option value="p_13.000_78.750">Open country — 13.0° N, 78.75° E</option><option value="p_12.500_76.250">Open country — 12.5° N, 76.25° E</option><option value="p_12.500_76.875">Mysuru · Mandya — 12.5° N, 76.88° E</option><option value="p_12.500_77.500">Ramanagara — 12.5° N, 77.50° E</option><option value="p_12.500_78.125">Hosur — 12.5° N, 78.13° E</option><option value="p_12.500_78.750">Open country — 12.5° N, 78.75° E</option><option value="p_12.000_76.250">Open country — 12.0° N, 76.25° E</option><option value="p_12.000_76.875">Chamarajanagar — 12.0° N, 76.88° E</option><option value="p_12.000_77.500">Open country — 12.0° N, 77.50° E</option><option value="p_12.000_78.125">Open country — 12.0° N, 78.13° E</option><option value="p_12.000_78.750">Open country — 12.0° N, 78.75° E</option></select>
+      </label>
+    </div>
+    </div>
+    <!-- A still Earth that follows the tab: clear sky for temperature, clouds for rainfall -->
+    <figure class="pp-earth" aria-hidden="true">
+      <img src="/_blob/d2e71c37dcca1d8b0ceed25abf07cd9c" data-earth="air" alt="" width="1400" height="1400" decoding="async">
+      <img src="/_blob/67d4db5f2a86e0ca449cb2d38654d95e" data-earth="rain" alt="" width="1400" height="1400" decoding="async" class="on">
+      <figcaption id="pp-earth-cap">With clouds · NASA Blue Marble cloud composite</figcaption>
+    </figure>
+  </div>
+
+  <!-- 1 · Headline numbers -->
+  <div class="pp-wrap pp-hero" aria-live="polite">
+    <div>
+      <div class="pp-k" id="pp-k1">Next month · December 2026</div>
+      <div class="pp-big" id="pp-v1">22<small>mm</small></div>
+      <div class="pp-sub" id="pp-s1"><b>80 % range</b>0–91 mm · 95 % range 0–159 mm.<br/>12 months after the forecast starts (December 2025). At this distance the engine falls back to the monthly average.</div>
+    </div>
+    <div>
+      <div class="pp-k" id="pp-k2">All of 2026</div>
+      <div class="pp-mid" id="pp-v2">853<small>mm total</small></div>
+      <div class="pp-sub" id="pp-s2"><b>−1 mm</b>vs the 1981–2025 average for these months (854 mm). Sum of the 12 monthly forecasts.</div>
+    </div>
+    <div>
+      <div class="pp-k" id="pp-k3">Typical miss, 1 month ahead</div>
+      <div class="pp-mid" id="pp-v3">±40<small>mm</small></div>
+      <div class="pp-sub" id="pp-s3">Average error on months the engine had never seen (2018–2024), across all 25 cells. The 80 % range held 76 % of the time.</div>
+    </div>
+  </div>
+
+  <!-- 2 · Chart -->
+  <div class="pp-wrap">
+    <div class="pp-chart-head">
+      <div>
+        <p class="pp-eyebrow">Five years at a glance</p>
+        <h2 class="pp-h2" id="pp-h2">Rainfall: observed, then forecast</h2>
+      </div>
+      <div class="pp-legend" aria-hidden="true">
+        <span><i style="border-color:#F2F2F2"></i>Observed (NASA POWER)</span>
+        <span><i style="border-color:#7FE0F0"></i>Engine forecast</span>
+        <span><i class="band" style="background:rgba(127,224,240,0.28)"></i>80 % range</span>
+        <span><i class="band" style="background:rgba(127,224,240,0.12)"></i>95 % range</span>
+        <span><i class="dash" style="border-color:#8A8A92"></i>Climatology</span>
+        <span><i class="dot" style="background:#E9A15A"></i>Actual 2026 (ERA5)</span>
+      </div>
+    </div>
+    <div class="pp-chart" id="pp-chart" role="img" aria-label="Rainfall at Bengaluru: observed 2022–2025, engine forecast for 2026, ranging 3 mm to 158 mm."><div><svg viewBox="0 0 1256 420" aria-hidden="true"><line class="ax" x1="60" x2="1238" y1="382.0" y2="382.0"></line><text x="50" y="386.0" text-anchor="end">0</text><line class="ax" x1="60" x2="1238" y1="264.0" y2="264.0"></line><text x="50" y="268.0" text-anchor="end">200</text><line class="ax" x1="60" x2="1238" y1="146.0" y2="146.0"></line><text x="50" y="150.0" text-anchor="end">400</text><line class="ax" x1="60" x2="1238" y1="28.0" y2="28.0"></line><text x="50" y="32.0" text-anchor="end">600</text><line class="ax" x1="60.0" x2="60.0" y1="28" y2="382"></line><text x="60.0" y="408" text-anchor="start" dx="4">2022</text><line class="ax" x1="299.6" x2="299.6" y1="28" y2="382"></line><text x="299.6" y="408" text-anchor="start" dx="4">2023</text><line class="ax" x1="539.2" x2="539.2" y1="28" y2="382"></line><text x="539.2" y="408" text-anchor="start" dx="4">2024</text><line class="ax" x1="778.8" x2="778.8" y1="28" y2="382"></line><text x="778.8" y="408" text-anchor="start" dx="4">2025</text><line class="ax" x1="1018.4" x2="1018.4" y1="28" y2="382"></line><text x="1018.4" y="408" text-anchor="start" dx="4">2026</text><text x="60" y="14" text-anchor="start">mm PER MONTH</text><line x1="1018.4" x2="1018.4" y1="28" y2="382" stroke="#7FE0F0" stroke-opacity=".5" stroke-dasharray="3 4"></line><text x="1026.4" y="18" style="fill:#7FE0F0">FORECAST →</text><line x1="1218.0" x2="1218.0" y1="28" y2="382" stroke="#E9A15A" stroke-opacity=".7"></line><text x="1218.0" y="396" text-anchor="middle" style="fill:#E9A15A" dy="-3">NOW</text><path d="M1018.4 302.1L1038.3 308.3L1058.3 295.1L1078.3 279.5L1098.2 241.2L1118.2 254.0L1138.2 243.3L1158.1 226.6L1178.1 210.6L1198.1 220.6L1218.0 271.9L1238.0 288.2L1238.0 382.0L1218.0 382.0L1198.1 372.3L1178.1 356.8L1158.1 377.6L1138.2 382.0L1118.2 382.0L1098.2 382.0L1078.3 382.0L1058.3 382.0L1038.3 382.0L1018.4 382.0Z" fill="#7FE0F0" fill-opacity=".12"></path><path d="M1018.4 340.1L1038.3 343.0L1058.3 334.1L1078.3 317.5L1098.2 280.5L1118.2 291.9L1138.2 282.5L1158.1 266.1L1178.1 249.4L1198.1 260.5L1218.0 310.5L1238.0 328.2L1238.0 382.0L1218.0 381.3L1198.1 332.8L1178.1 319.4L1158.1 339.3L1138.2 356.2L1118.2 362.1L1098.2 353.6L1078.3 382.0L1058.3 382.0L1038.3 382.0L1018.4 382.0Z" fill="#7FE0F0" fill-opacity=".26"></path><path d="M1018.4 379.5L1038.3 378.8L1058.3 373.5L1078.3 355.4L1098.2 321.7L1118.2 331.9L1138.2 323.8L1158.1 307.1L1178.1 288.6L1198.1 301.1L1218.0 349.8L1238.0 368.8" fill="none" stroke="#8A8A92" stroke-width="1.5" stroke-dasharray="5 4"></path><path d="M60.0 380.7L80.0 382.0L99.9 374.9L119.9 352.3L139.9 269.9L159.8 291.9L179.8 309.4L199.8 88.3L219.7 288.7L239.7 275.4L259.7 342.5L279.6 324.9L299.6 381.8L319.6 381.8L339.5 358.4L359.5 364.5L379.5 302.1L399.4 322.9L419.4 340.3L439.4 343.0L459.3 282.0L479.3 348.2L499.3 341.8L519.2 371.9L539.2 380.0L559.2 382.0L579.1 382.0L599.1 382.0L619.1 313.4L639.0 294.7L659.0 345.6L678.9 270.1L698.9 352.8L718.9 247.8L738.8 357.6L758.8 322.2L778.8 378.2L798.7 382.0L818.7 378.5L838.7 360.1L858.6 264.9L878.6 356.2L898.6 346.3L918.5 294.2L938.5 292.6L958.5 297.1L978.4 367.5L998.4 379.8" fill="none" stroke="#F2F2F2" stroke-width="1.8" stroke-linejoin="round"></path><path d="M1018.4 380.0L1038.3 378.8L1058.3 373.5L1078.3 355.4L1098.2 321.7L1118.2 331.9L1138.2 323.8L1158.1 307.1L1178.1 288.6L1198.1 301.1L1218.0 349.8L1238.0 368.8" fill="none" stroke="#7FE0F0" stroke-width="2.2" stroke-linejoin="round"></path><circle cx="1018.4" cy="380.0" r="2.6" fill="#7FE0F0"></circle><circle cx="1038.3" cy="378.8" r="2.6" fill="#7FE0F0"></circle><circle cx="1058.3" cy="373.5" r="2.6" fill="#7FE0F0"></circle><circle cx="1078.3" cy="355.4" r="2.6" fill="#7FE0F0"></circle><circle cx="1098.2" cy="321.7" r="2.6" fill="#7FE0F0"></circle><circle cx="1118.2" cy="331.9" r="2.6" fill="#7FE0F0"></circle><circle cx="1138.2" cy="323.8" r="2.6" fill="#7FE0F0"></circle><circle cx="1158.1" cy="307.1" r="2.6" fill="#7FE0F0"></circle><circle cx="1178.1" cy="288.6" r="2.6" fill="#7FE0F0"></circle><circle cx="1198.1" cy="301.1" r="2.6" fill="#7FE0F0"></circle><circle cx="1218.0" cy="349.8" r="2.6" fill="#7FE0F0"></circle><circle cx="1238.0" cy="368.8" r="2.6" fill="#7FE0F0"></circle></svg></div></div>
+    
+    <p class="pp-check" id="pp-check"><b>Reality check unavailable</b> — the 2026 actuals could not be loaded (needs a connection to the Open-Meteo archive).</p>
+    <p class="pp-note" id="pp-chart-note">Rainfall is shown as the total for each month (the engine works in mm per day, multiplied by the days in the month). The engine forecasts from December 2025, so months through now can be checked against what actually happened. The grey dashed line is the 1981–2025 average for each month: where the forecast sits on it, the engine has nothing better to say.</p>
+  </div>
+
+  <!-- 3 · How far ahead -->
+  <div class="pp-wrap pp-section">
+    <div class="pp-two">
+      <div>
+        <p class="pp-eyebrow">How far ahead</p>
+        <h2 class="pp-h2">No better than the average at any distance.</h2>
+        <p id="pp-trust-text">Precipitation Corrected: no candidate model beats climatology on held-out data; the forecast is effectively the monthly climatology. 80% prediction intervals covered 75%–77% of held-out observations across horizons (nominal 80%). Ranges are built from the model’s own past misses on months it had not seen.</p>
+      </div>
+      <div class="pp-hz-wrap">
+        <table class="pp-hz">
+          <caption class="pp-sr">Forecast skill by months ahead</caption>
+          <thead><tr><th scope="col">Months ahead</th><th scope="col">Model chosen</th><th scope="col">Better than average by</th><th scope="col">Typical error</th><th scope="col">80 % range hit</th></tr></thead>
+          <tbody id="pp-hz"><tr><td>1</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">76 %</td></tr><tr><td>2</td><td>Damped persistence</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">77 %</td></tr><tr><td>3</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">76 %</td></tr><tr><td>4</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">75 %</td></tr><tr><td>5</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 41 mm</td><td class="dim">75 %</td></tr><tr><td>6</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 41 mm</td><td class="dim">75 %</td></tr><tr><td>7</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 41 mm</td><td class="dim">75 %</td></tr><tr><td>8</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 41 mm</td><td class="dim">76 %</td></tr><tr><td>9</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 41 mm</td><td class="dim">75 %</td></tr><tr><td>10</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">76 %</td></tr><tr><td>11</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">76 %</td></tr><tr><td>12</td><td>Monthly average</td><td><div class="bar"><i class="none" style="width:4px"></i><span>0 %</span></div></td><td class="dim">± 40 mm</td><td class="dim">76 %</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 · Beyond 12 months -->
+  <div class="pp-wrap pp-section">
+    <div class="pp-two">
+      <div>
+        <p class="pp-eyebrow">Beyond 12 months</p>
+        <h2 class="pp-h2" id="pp-scen-h">No rainfall scenario here</h2>
+        <p id="pp-scen-text">Monsoon rainfall depends on regional circulation that a simple warming scale cannot capture, so this page does not invent a rainfall projection. Switch to air temperature for the warming scenarios.</p>
+      </div>
+      <div id="pp-scen-wrap"><p class="pp-flag"><b>What the engine can add.</b> Its long-term branch (backend/engines/prediction/projections.py) summarises NASA NEX-GDDP-CMIP6 model runs, but that dataset has not been downloaded into this project yet, so it is not shown. Once it is, this section is replaced by the multi-model median and range.</p></div>
+    </div>
+  </div>
+
+  <!-- 5 · How it works -->
+  <div class="pp-wrap pp-section">
+    <p class="pp-eyebrow">How it works</p>
+    <h2 class="pp-h2">Tested on years it never saw</h2>
+    <div class="pp-how" id="pp-how"><div><h3>The data</h3><ul><li><b>NASA POWER monthly</b>, built on the MERRA-2 reanalysis.</li><li><b>1981-01–2025-12</b> used for training.</li><li><b>25 cells</b> of 0.5° × 0.625° (about 55 km) over Bengaluru and its surroundings. One cell covers a whole city.</li><li>Forecast starts after <b>December 2025</b>, the last month acquired.</li></ul></div><div><h3>The models</h3><ul><li>Six candidates compete: Monthly average, Same month last year, Damped persistence, Average + trend, Ridge regression, Gradient boosting.</li><li><b>One is picked for each distance ahead</b>, judged only on 2011–2017.</li><li>Scored on <b>2018-01–2024-12</b>, which the choice never saw. Picked here: Damped persistence (recent anomalies that fade out toward the average); Monthly average (the long-term average for that calendar month).</li><li>Ranges are the 10th–90th and 2.5th–97.5th percentiles of the chosen model’s past misses.</li></ul></div><div><h3>What it can’t do</h3><ul><li>Intervals describe historical out-of-sample error of this statistical model; they are not climate-scenario uncertainty.</li><li>~50 km cells: one cell covers all of Bengaluru; no neighbourhood-scale prediction.</li><li>Forecast issued from the last ACQUIRED month (Dec 2025); 2026 months already elapsed can be verified once acquired.</li><li>Not a weather forecast and not a climate projection.</li><li>Precipitation forecasts clipped at 0 mm/day (physical bound).</li></ul></div></div>
+    <p class="pp-source" id="pp-source">Engine: aspect2729/bhuvyom · backend/engines/prediction · model version 1.0.0 · results generated 2026-11-13. Method basis: FPP3 (Hyndman &amp; Athanasopoulos 2021); Tashman 2000; Lei et al. 2018. Actual 2026 values: Open-Meteo archive (ERA5), fetched live. Scenario warming: IPCC AR6 WGI Table SPM.1, central estimates. NASA POWER and ERA5 are different reanalyses, so small offsets between them are expected.</p>
+  </div>
+
+</main>
+</sc-if>
+<footer class="sp-footer">
+      <span>Bengaluru From Orbit · Planetary &amp; Regional Environmental Engine</span>
+      <span>NASA POWER, MODIS, GPM · Open-Meteo · ECMWF · IPCC AR6</span>
+      <nav aria-label="Footer"><a href="Home.dc.html">Layers</a><a href="Home.dc.html">16 Systems</a><a href="Simulation.dc.html">Simulations</a><a href="Compare.dc.html">Compare</a><a href="Main.dc.html">Predictions</a><a href="Home.dc.html">Data</a></nav>
+    </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4366}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'air' }; }
+  renderVals() {
+    return {
+      isAir: this.state.v === 'air',
+      isRain: this.state.v === 'rain',
+      pickAir: () => this.setState({ v: 'air' }),
+      pickRain: () => this.setState({ v: 'rain' })
+    };
+  }
+}
+</script>
+</body>
+</html>

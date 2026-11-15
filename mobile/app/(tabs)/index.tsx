@@ -1,317 +1,331 @@
-import { Link } from 'expo-router';
-import { useMemo, useRef, useState, type ComponentRef } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type LayoutChangeEvent,
-} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Path } from 'react-native-svg';
-import { CtaLink } from '@/components/CtaLink';
-import { EarthCanvas } from '@/components/EarthCanvas';
-import { TopBar } from '@/components/TopBar';
-import { mobileHomeLayout } from '@/lib/earthLayouts';
-import { useDeviceLayout } from '@/lib/useDeviceLayout';
-import { colors, fonts } from '@/theme/tokens';
+import { useRouter, type Href } from 'expo-router';
+import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ChevronRight, ExploreIcon, type ExploreKind } from '@/components/Icons';
+import { CtaPill, Screen, SectionLabel } from '@/components/ui';
+import { api, fmt } from '@/lib/api';
+import { EARTH_CLOUDS } from '@/lib/images';
+import { fetchHomeStamp } from '@/lib/openMeteo';
+import { refValue } from '@/lib/systems';
+import { useApi } from '@/lib/useApi';
+import { colors, cssAngle, em, fonts, surfaces } from '@/theme/tokens';
 
-/**
- * Mobile Home — port of design-source/mobile/MobileHome.dc.html
- * Pixel values match the export.
- */
+type Probe = {
+  /** key in /api/site/summary readings (undefined = API has no such reading) */
+  key?: 'air' | 'lst' | 'rh' | 'pm25';
+  label: string;
+  digits: number;
+  accent?: string;
+  /** systems.json reference fallback */
+  ref: [string, string];
+  unit?: string;
+};
+
+const PROBES: Probe[] = [
+  { key: 'air', label: 'Air temperature', digits: 1, ref: ['sys-01', 'Air temperature'], unit: '°C' },
+  { key: 'lst', label: 'Land surface', digits: 1, accent: colors.amber, ref: ['sys-01', 'Land surface temperature'], unit: '°C' },
+  { key: 'rh', label: 'Relative humidity', digits: 0, ref: ['sys-04', 'Relative humidity'], unit: '%' },
+  { key: 'pm25', label: 'PM2.5', digits: 0, ref: ['sys-11', 'PM2.5 Particulate'], unit: 'µg/m³' },
+];
+
+const TILE_GRAD = cssAngle(160);
+const SIM_GRAD = cssAngle(120);
+
+/** Home — Main.dc.html. */
 export default function HomeScreen() {
-  const layout = useDeviceLayout();
-  const [soundOn, setSoundOn] = useState(false);
-  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
-  const explorerY = useRef(0);
-  const earthLayout = useMemo(
-    () =>
-      mobileHomeLayout({
-        screenH: layout.screenH,
-        safeTop: layout.safeTop,
-        compact: layout.compact,
-      }),
-    [layout.screenH, layout.safeTop, layout.compact],
-  );
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const go = (href: Href) => () => router.push(href);
 
-  const scrollToExplorer = () => {
-    scrollRef.current?.scrollTo({ y: Math.max(0, explorerY.current - 20), animated: true });
-  };
+  const hero = Math.min(350, width - 40);
+  const k = hero / 350;
 
-  const onExplorerLayout = (e: LayoutChangeEvent) => {
-    explorerY.current = e.nativeEvent.layout.y;
+  // Live: BhuVyom site summary → Open-Meteo stamp → systems.json reference.
+  const site = useApi('site', () => api.site());
+  const stamp = useApi('omHome', () => fetchHomeStamp(), 20 * 60 * 1000);
+  const readings = site.data?.readings;
+  const stampMap: Record<string, number | null | undefined> = {
+    air: stamp.data?.air,
+    lst: stamp.data?.surf,
+    rh: stamp.data?.rh,
+    pm25: stamp.data?.pm25,
   };
+  const probes = PROBES.map((p) => {
+    const r = p.key && p.key !== 'pm25' ? readings?.[p.key] : undefined;
+    const fromSite = r && r.value != null && Number.isFinite(r.value) ? r : null;
+    const fromOm =
+      !fromSite && p.key && stampMap[p.key] != null && Number.isFinite(stampMap[p.key]!)
+        ? { value: stampMap[p.key]!, unit: p.unit ?? '', period: stamp.data?.time ?? 'Open-Meteo' }
+        : null;
+    const live = fromSite ?? fromOm;
+    const ref = refValue(p.ref[0], p.ref[1]);
+    return {
+      ...p,
+      live,
+      via: fromSite ? ('api' as const) : fromOm ? ('om' as const) : ('ref' as const),
+      text: live ? `${fmt(live.value, p.digits)} ${live.unit}` : ref ?? 'No record',
+    };
+  });
+  const nLive = probes.filter((p) => p.live).length;
+  const nOm = probes.filter((p) => p.via === 'om').length;
+  const badge =
+    nLive === probes.length
+      ? nOm === probes.length
+        ? 'Live · Open-Meteo'
+        : nOm > 0
+          ? 'Live'
+          : 'Live'
+      : nLive === 0
+        ? 'Reference'
+        : 'Live + reference';
+  const refNames = probes.filter((p) => !p.live).map((p) => p.label);
+  const liveNames = probes.filter((p) => p.live).map((p) => `${p.label} (${p.live!.period})`);
+  const footnote =
+    nLive === 0
+      ? `Reference values from the 16-systems catalogue · live values on Simulate${site.error ? ` · API: ${site.error}` : ''}`
+      : nOm > 0 && nOm === nLive
+        ? `Live from Open-Meteo (${stamp.data?.time ?? 'now'}): ${liveNames.join(', ')}.${refNames.length ? ` Reference: ${refNames.join(', ')}.` : ''} Full map on Simulate.`
+        : `Live: ${liveNames.join(', ')}.${refNames.length ? ` Reference (16-systems catalogue): ${refNames.join(', ')}.` : ''} Live map values on Simulate.`;
 
   return (
-    <View style={styles.root}>
-      <TopBar soundOn={soundOn} onToggleSound={() => setSoundOn((s) => !s)} />
-
-      <ScrollView
-        ref={scrollRef}
-        style={styles.root}
-        contentContainerStyle={{ paddingBottom: layout.endPad }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* HERO */}
-        <View style={[styles.hero, { height: layout.screenH }]}>
-          <EarthCanvas width={layout.width} height={layout.screenH} layout={earthLayout} />
-          <View style={[styles.heroCopy, { paddingTop: layout.heroPad }]} pointerEvents="box-none">
-            <Text style={styles.eyebrow}>NASA EARTH DATA</Text>
-            <Text style={[styles.h1, { fontSize: layout.compact ? 42 : 50 }]}>
-              {'READ\nTHE CITY\nFROM SPACE'}
-            </Text>
-            <View style={styles.amberRule} />
-            {!layout.compact ? (
-              <Text style={styles.heroBody}>
-                Temperature, rainfall, humidity and wind over Bengaluru — from NASA satellites and
-                models.
+    <Screen
+      glow
+      refreshing={site.refreshing || stamp.refreshing}
+      onRefresh={() => {
+        site.reload();
+        stamp.reload();
+      }}
+      contentStyle={{ gap: 28, paddingHorizontal: 20 }}
+    >
+      {/* Hero */}
+      <View style={{ gap: 14, paddingTop: 8 }}>
+        <Text style={styles.eyebrow}>NASA EARTH DATA</Text>
+        <Text style={styles.h1}>{'READ\nTHE CITY\nFROM SPACE'}</Text>
+        <View style={{ width: hero, height: 330 * k, marginTop: 4 }}>
+          <Image
+            source={EARTH_CLOUDS}
+            accessibilityLabel="Earth from orbit with Bengaluru marked"
+            style={{ position: 'absolute', left: 10 * k, top: -10 * k, width: hero, height: hero, borderRadius: hero / 2 }}
+            resizeMode="cover"
+          />
+          <View style={styles.chips}>
+            {['12.97° N', '77.59° E', '≈ 920 M'].map((c) => (
+              <Text key={c} style={styles.chip}>
+                {c}
               </Text>
-            ) : null}
-            <View style={styles.ctaRow}>
-              <Pressable onPress={scrollToExplorer} style={styles.getStarted}>
-                <View>
-                  <Text style={styles.getStartedLabel}>Get Started</Text>
-                  <View style={styles.getStartedRule} />
-                </View>
-                <Svg width={11} height={11} viewBox="0 0 12 12" fill="none">
-                  <Path
-                    d="M4 2l4 4-4 4"
-                    stroke={colors.amber}
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </Svg>
-              </Pressable>
+            ))}
+          </View>
+        </View>
+        <Text style={styles.lede}>
+          All 16 environmental systems over Bengaluru and Karnataka — from NASA satellites and
+          climatological models, on one map you can explore, analyse, and simulate to 2100.
+        </Text>
+        <CtaPill label="GET STARTED" fullWidth onPress={go('/layers')} />
+      </View>
 
-              <Link href="/lab" asChild>
-                <Pressable style={styles.labPill}>
-                  <View style={styles.playDisc}>
-                    <Svg width={9} height={11} viewBox="0 0 12 14">
-                      <Path d="M2 1.5l9 5.5-9 5.5z" fill="#000" />
-                    </Svg>
-                  </View>
-                  <Text style={styles.labPillText}>Simulation Lab</Text>
-                </Pressable>
-              </Link>
+      {/* At a glance */}
+      <View style={styles.stats} accessibilityLabel="At a glance">
+        {[
+          ['16', 'Systems'],
+          ['100+', 'Variables'],
+          ['2100', 'Simulate to'],
+        ].map(([n, l]) => (
+          <View key={l} style={styles.stat}>
+            <Text style={styles.statN}>{n}</Text>
+            <Text style={styles.statL}>{l}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Explore */}
+      <View style={{ gap: 12 }}>
+        <View style={styles.row}>
+          <SectionLabel size={13}>EXPLORE</SectionLabel>
+          <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.text5 }}>7 sections</Text>
+        </View>
+        <View style={styles.grid}>
+          <Tile
+            kind="layers"
+            title="Data layers"
+            sub="Seven primary signals, one map"
+            onPress={go('/layers')}
+            gradient={['rgba(91,140,255,0.16)', 'rgba(255,255,255,0.03)']}
+          />
+          <Tile kind="systems" title="16 Systems" sub="Every variable, sensor and unit" onPress={go('/systems')} />
+
+          <Pressable onPress={go('/simulate')} accessibilityRole="link" style={styles.simTile}>
+            <LinearGradient
+              colors={['rgba(233,161,90,0.20)', 'rgba(255,255,255,0.03)']}
+              locations={[0, 0.7]}
+              {...SIM_GRAD}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={{ flex: 1, gap: 6 }}>
+              <Text style={{ fontFamily: fonts.display, fontSize: 11, letterSpacing: em(11, 0.24), color: colors.amber }}>
+                SIMULATION
+              </Text>
+              <Text style={{ fontFamily: fonts.displayMedium, fontSize: 18, letterSpacing: em(18, 0.06), color: colors.text }}>
+                Ask the city “what if?”
+              </Text>
+              <Text style={styles.tileSub}>Live map · 1980 → 2100 timeline</Text>
             </View>
-          </View>
-          <View style={[styles.coords, { bottom: layout.coordY }]}>
-            <Text style={styles.coordText}>12.97° N · 77.59° E</Text>
-            <Text style={[styles.coordText, { color: colors.amber }]}>DRAG TO SPIN</Text>
-          </View>
+            <View style={styles.simGo}>
+              <ChevronRight color={colors.bg} />
+            </View>
+          </Pressable>
+
+          <Tile kind="compare" title="Then vs now" sub="A past day beside live conditions" onPress={go('/compare')} />
+          <Tile kind="forecast" title="Forecast" sub="12 months from the BhuVyom engine" onPress={go('/forecast')} />
+          <Tile kind="data" title="Data sources" sub="Built on NASA" onPress={go('/data')} short />
+          <Tile kind="pipeline" title="Pipeline" sub="From orbit to street" onPress={go('/pipeline')} short />
         </View>
+      </View>
 
-        {/* LABS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>TWO LABS</Text>
-          <Text style={styles.sectionH2}>{'TEST TODAY.\nSEE TOMORROW.'}</Text>
-
-          <View style={styles.labCards}>
-            <LinearGradient
-              colors={['#7FE0F0', '#5B8CFF', '#9A86B8']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradBorder}
-            >
-              <View style={styles.labCardInner}>
-                <View style={styles.cardHead}>
-                  <Text style={styles.cardTitle}>SIMULATION LAB</Text>
-                  <Text style={styles.badge}>SAMPLE</Text>
-                </View>
-                <Text style={styles.cardBody}>
-                  Change trees, roofs, rain and wind — then compare before and after.
-                </Text>
-                <CtaLink href="/lab" underline="gradient" underlineWidth={58}>
-                  Open Simulation Lab
-                </CtaLink>
-              </View>
-            </LinearGradient>
-
-            <LinearGradient
-              colors={['#9A86B8', '#E0905A', '#F4C27C']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradBorder}
-            >
-              <View style={styles.labCardInner}>
-                <View style={styles.cardHead}>
-                  <Text style={styles.cardTitle}>FUTURE EARTH</Text>
-                  <Text style={styles.badge}>ILLUSTRATIVE</Text>
-                </View>
-                <Text style={styles.cardBody}>
-                  How today’s choices and nature’s cycles could change heat, rain, water and air by
-                  2100.
-                </Text>
-                <CtaLink href="/future" underline="gradient" underlineWidth={58}>
-                  Explore Future Earth
-                </CtaLink>
-              </View>
-            </LinearGradient>
-          </View>
-        </View>
-
-        {/* EXPLORER anchor target */}
-        <View style={[styles.section, { paddingTop: 80 }]} onLayout={onExplorerLayout}>
-          <Text style={styles.sectionEyebrow}>THE EXPLORER</Text>
-          <Text style={styles.sectionH2}>{'READ THE HEAT,\nSTREET BY STREET'}</Text>
-          <Text style={[styles.cardBody, { marginTop: 14 }]}>
-            Full explorer grid, layer cards, honest-data chart and sources continue here — matching
-            MobileHome.dc.html section-for-section.
+      {/* Bengaluru probe */}
+      <View style={styles.probe} accessibilityLabel="Bengaluru now">
+        <View style={styles.row}>
+          <Text style={{ fontFamily: fonts.display, fontSize: 11, letterSpacing: em(11, 0.24), color: colors.text5 }}>
+            BENGALURU LOCAL PROBE
           </Text>
+          <View style={styles.badge}>
+            <View style={styles.badgeDot} />
+            <Text style={{ fontFamily: fonts.body, fontSize: 11, color: colors.cyan }}>
+              {site.loading ? 'Loading…' : badge}
+            </Text>
+          </View>
         </View>
-      </ScrollView>
-    </View>
+        <View style={styles.probeGrid}>
+          {probes.map((p) => (
+            <View key={p.label} style={styles.probeCell}>
+              <Text style={[styles.probeV, p.accent ? { color: p.accent } : null]}>{p.text}</Text>
+              <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.text4 }}>{p.label}</Text>
+            </View>
+          ))}
+        </View>
+        <Text style={{ fontFamily: fonts.body, fontSize: 11, lineHeight: 11 * 1.45, color: colors.text5 }}>{footnote}</Text>
+      </View>
+    </Screen>
+  );
+}
+
+function Tile({
+  kind,
+  title,
+  sub,
+  onPress,
+  gradient,
+  short,
+}: {
+  kind: ExploreKind;
+  title: string;
+  sub: string;
+  onPress: () => void;
+  gradient?: [string, string];
+  short?: boolean;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      style={[styles.tile, { minHeight: short ? 130 : 150, backgroundColor: gradient ? undefined : surfaces.cardStrong }]}
+    >
+      {gradient ? <LinearGradient colors={gradient} {...TILE_GRAD} style={StyleSheet.absoluteFill} /> : null}
+      <ExploreIcon kind={kind} />
+      <Text style={styles.tileTitle}>{title}</Text>
+      <Text style={styles.tileSub}>{sub}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
-  hero: { position: 'relative' },
-  heroCopy: { paddingHorizontal: 20, zIndex: 2 },
-  eyebrow: {
-    fontFamily: fonts.display,
-    fontSize: 12,
-    letterSpacing: 0.38 * 12,
-    color: 'rgba(242,242,242,0.8)',
-  },
+  eyebrow: { fontFamily: fonts.display, fontSize: 11, letterSpacing: em(11, 0.28), color: colors.cyan },
   h1: {
-    marginTop: 14,
     fontFamily: fonts.displayLight,
     fontWeight: '300',
-    lineHeight: undefined,
-    letterSpacing: 0.04 * 50,
+    fontSize: 42,
+    lineHeight: 42 * 1.02,
+    letterSpacing: em(42, 0.05),
     color: colors.text,
   },
-  amberRule: {
-    width: 56,
-    height: 2,
-    marginTop: 20,
-    backgroundColor: colors.amber,
+  chips: { position: 'absolute', left: 0, bottom: 6, flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  chip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(5,5,6,0.72)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    fontFamily: fonts.display,
+    fontSize: 11,
+    letterSpacing: em(11, 0.12),
+    color: colors.text2,
   },
-  heroBody: {
-    marginTop: 18,
-    maxWidth: 330,
-    fontFamily: fonts.body,
-    fontSize: 14,
-    lineHeight: 14 * 1.65,
-    color: 'rgba(242,242,242,0.78)',
+  lede: { fontFamily: fonts.body, fontSize: 14, lineHeight: 14 * 1.6, color: colors.text4 },
+  stats: { flexDirection: 'row', gap: 8 },
+  stat: {
+    flex: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: surfaces.cardStrong,
+    borderWidth: 1,
+    borderColor: surfaces.border,
   },
-  ctaRow: {
-    marginTop: 20,
+  statN: { fontFamily: fonts.display, fontSize: 26, color: colors.text },
+  statL: { marginTop: 2, fontFamily: fonts.body, fontSize: 11, color: colors.text4 },
+  row: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  tile: {
+    width: '48.4%',
+    flexGrow: 1,
+    gap: 10,
+    padding: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: surfaces.borderStrong,
+  },
+  tileTitle: {
+    marginTop: 'auto',
+    fontFamily: fonts.displayMedium,
+    fontSize: 15,
+    letterSpacing: em(15, 0.06),
+    color: colors.text,
+  },
+  tileSub: { fontFamily: fonts.body, fontSize: 12, lineHeight: 12 * 1.45, color: colors.text4 },
+  simTile: {
+    width: '100%',
+    minHeight: 108,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
     gap: 16,
-  },
-  getStarted: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 10,
-  },
-  getStartedLabel: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 15,
-    color: colors.text,
-    paddingBottom: 7,
-  },
-  getStartedRule: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    width: 52,
-    height: 2,
-    borderRadius: 2,
-    backgroundColor: colors.amber,
-  },
-  labPill: {
-    height: 44,
-    paddingLeft: 6,
-    paddingRight: 16,
-    borderRadius: 22,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(242,242,242,0.22)',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    borderColor: surfaces.amberLine,
   },
-  playDisc: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  simGo: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.amber,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  labPillText: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text,
+  probe: {
+    gap: 10,
+    padding: 18,
+    borderRadius: 20,
+    backgroundColor: surfaces.card,
+    borderWidth: 1,
+    borderColor: surfaces.border,
   },
-  coords: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  coordText: {
-    fontFamily: fonts.display,
-    fontSize: 11,
-    letterSpacing: 0.22 * 11,
-    color: 'rgba(242,242,242,0.9)',
-    textShadowColor: 'rgba(0,0,0,0.95)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 8,
-  },
-  section: { paddingTop: 72, paddingHorizontal: 20 },
-  sectionEyebrow: {
-    fontFamily: fonts.display,
-    fontSize: 12,
-    letterSpacing: 0.34 * 12,
-    color: colors.cyan,
-  },
-  sectionH2: {
-    marginTop: 12,
-    fontFamily: fonts.displayLight,
-    fontSize: 34,
-    letterSpacing: 0.04 * 34,
-    lineHeight: 34 * 1.02,
-    color: colors.text,
-  },
-  labCards: { marginTop: 28, gap: 14 },
-  gradBorder: { borderRadius: 24, padding: 1 },
-  labCardInner: {
-    borderRadius: 23,
-    backgroundColor: colors.surface,
-    padding: 22,
-    gap: 14,
-  },
-  cardHead: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontFamily: fonts.display,
-    fontSize: 22,
-    letterSpacing: 0.06 * 22,
-    color: colors.text,
-  },
-  badge: {
-    fontFamily: fonts.body,
-    fontSize: 10,
-    letterSpacing: 0.1 * 10,
-    color: colors.amber,
-  },
-  cardBody: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    lineHeight: 13 * 1.6,
-    color: colors.text3,
-  },
+  badge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  badgeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.cyan },
+  probeGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 14, columnGap: 12 },
+  probeCell: { width: '47%' },
+  probeV: { fontFamily: fonts.display, fontSize: 24, color: colors.text },
 });

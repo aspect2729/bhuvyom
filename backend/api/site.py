@@ -90,7 +90,7 @@ def _summary() -> dict[str, Any]:
         idx = [i for i, t in enumerate(d["dates"]) if t.startswith(f"2024-{m:02d}")]
         lst.append(clean(float(np.nanmean(d["day"][idx])), 2) if idx else None)
 
-    sim = simulation.run(0.6, 0.8, "C", 0.2)
+    sim = simulation.run(0.6, 0.8, "C", 0.2, forcing="observed_gpm", persist=False)
     diff = [v for v in sim.grid.fields["total_difference"].values.values() if v is not None]
     lo = [v for v in sim.grid.fields["diff_ens_low"].values.values() if v is not None]
     hi = [v for v in sim.grid.fields["diff_ens_high"].values.values() if v is not None]
@@ -110,14 +110,51 @@ def site_summary() -> dict[str, Any]:
     return _summary()
 
 
-@router.get("/api/site/runoff")
-def site_runoff(scenario_impervious: float = Query(0.8, ge=0, le=1), baseline_impervious: float = Query(0.6, ge=0, le=1)):
+@router.get("/api/site/sim/live")
+def site_sim_live(region: str = Query("ka", pattern="^(ka|blr)$")):
+    """Live Simulation-map fields: NASA GES DISC MERRA-2 M2T1NXSLV (Earthdata OPeNDAP)."""
+    from engines import site_sim
+
     try:
-        sim = simulation.run(baseline_impervious, scenario_impervious, "C", 0.2)
+        return site_sim.live(region)
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse(status_code=503, content={"error": "sim_live_unavailable", "reason": str(exc)})
+
+
+@router.get("/api/site/sim/record")
+def site_sim_record():
+    """Annual Bengaluru record from verified GES DISC rows in Supabase."""
+    from engines import site_sim
+
+    try:
+        return site_sim.record()
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse(status_code=503, content={"error": "sim_record_unavailable", "reason": str(exc)})
+
+
+@router.get("/api/site/runoff")
+def site_runoff(
+    scenario_impervious: float = Query(0.8, ge=0, le=1),
+    baseline_impervious: float = Query(0.6, ge=0, le=1),
+    forcing: str = Query("auto"),
+    persist: bool = Query(True),
+):
+    try:
+        sim = simulation.run(baseline_impervious, scenario_impervious, "C", 0.2, forcing=forcing, persist=persist)
     except FeasibilityError as exc:
         return JSONResponse(status_code=422, content=exc.to_dict())
     diff = [v for v in sim.grid.fields["total_difference"].values.values() if v is not None]
     lo = [v for v in sim.grid.fields["diff_ens_low"].values.values() if v is not None]
     hi = [v for v in sim.grid.fields["diff_ens_high"].values.values() if v is not None]
-    return {"mean_extra_mm": clean(float(np.mean(diff)), 0), "ens_low": clean(min(lo), 0), "ens_high": clean(max(hi), 0),
-            "period": f"{sim.temporal_coverage['start']} – {sim.temporal_coverage['end']}", "validation": sim.validation["status"]}
+    out = {
+        "mean_extra_mm": clean(float(np.mean(diff)), 0),
+        "ens_low": clean(min(lo), 0),
+        "ens_high": clean(max(hi), 0),
+        "period": f"{sim.temporal_coverage['start']} – {sim.temporal_coverage['end']}",
+        "validation": sim.validation["status"],
+        "forcing": (sim.configuration or {}).get("forcing"),
+        "forcing_source_kind": (sim.configuration or {}).get("forcing_source_kind"),
+    }
+    if (sim.configuration or {}).get("persistence"):
+        out["persistence"] = sim.configuration["persistence"]
+    return out

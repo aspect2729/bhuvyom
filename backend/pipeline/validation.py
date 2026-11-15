@@ -13,6 +13,8 @@ RANGES: dict[str, tuple[float, float]] = {
     "T2M_MIN": (-15.0, 50.0),
     "RH2M": (0.0, 100.0),
     "WS2M": (0.0, 60.0),
+    "WD2M": (0.0, 360.0),
+    "PS": (70000.0, 110000.0),
     "PRECTOTCORR": (0.0, 800.0),
     "ALLSKY_SFC_SW_DWN": (0.0, 40.0),  # kWh/m^2/day
     "CLOUD_AMT": (0.0, 100.0),

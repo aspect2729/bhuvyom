@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Simulation — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Jura";src:url("/_blob/74ac33ad597c75f6f5cce3ca148bf5c6") format("woff2");font-weight:300 700;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/be326da0939a8ed4475105466956b08c") format("woff2");font-weight:300;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/a85cab6fcd19b140ca19b662e93f465d") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/016814f1086ea4b56998dd5e8b0629ab") format("woff2");font-weight:500;font-display:swap}
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: none;
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: none;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+body { margin: 0; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow-x: hidden; }
+a { color: #7FE0F0; transition: color 0.2s; }
+a:hover { color: #F2F2F2; }
+button { font-family: inherit; }
+@keyframes eqA { 0%,100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+@keyframes eqB { 0%,100% { transform: scaleY(.8); } 50% { transform: scaleY(.3); } }
+@keyframes eqC { 0%,100% { transform: scaleY(.5); } 50% { transform: scaleY(.95); } }
+@keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(127,224,240,0.4); }
+
+/* Sub-page shell: same black page and navigation bar as the home page */
+.sp-page { position: relative; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow: hidden; }
+.sp-page > header { position: absolute; left: 0; right: 0; top: 18px; z-index: 30; padding: 0 20px; }
+.sp-footer { max-width: 1320px; margin: 0 auto; padding: 28px 32px 56px; box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 12px; color: #A0A0A8; }
+.sp-footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.sp-footer a { color: #C9C9CE; text-decoration: none; }
+.sp-footer a:hover { color: #7FE0F0; }
+.sp-foot-wrap { padding: 0 0; }
+@media (max-width: 820px) { .sp-footer { padding: 24px 20px 40px; } }
+
+/* ==========================================================================
+   Simulation — a clear, framed instrument fed by real data.
+   Reading order: 1 the map (crisp frame, no fades) → 2 the number under it → 3 time → 4 context
+   ========================================================================== */
+.sim-wrap { max-width: 1320px; margin: 0 auto; padding-left: 32px; padding-right: 32px; box-sizing: border-box; }
+.sim-eyebrow { margin: 0; font-family: Jura, sans-serif; font-size: 14px; letter-spacing: 0.36em; color: #7FE0F0; text-transform: uppercase; }
+.sim-intro { padding-top: 170px; padding-bottom: 64px; }
+.sim-intro h2 { margin: 18px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(40px, 5.2vw, 72px); letter-spacing: 0.05em; line-height: 1; }
+.sim-intro p { margin: 30px 0 0; max-width: 440px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+#simulations :focus-visible { outline: 2px solid #7FE0F0; outline-offset: 2px; }
+.ts-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Status strip above the frame */
+.ts-strip { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 14px; font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.2em; color: #A0A0A8; text-transform: uppercase; }
+.ts-live { display: inline-flex; align-items: center; gap: 10px; }
+.ts-live::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: #6E6E76; }
+.ts-live[data-state="live"]::before { background: #7FE0F0; box-shadow: 0 0 0 3px rgba(127,224,240,0.18); }
+.ts-live[data-state="error"]::before { background: #E9A15A; }
+
+/* 1 · The frame — sharp edges, no gradients */
+#terra-sim-engine { position: relative; overflow: hidden; height: clamp(520px, 74vh, 800px); background: #050506; border: 1px solid rgba(255,255,255,0.16); color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; }
+#terra-sim-engine * { box-sizing: border-box; }
+#terra-sim-engine button { font-family: Poppins, system-ui, sans-serif; }
+#terra-leaflet-map { position: absolute; inset: 0; z-index: 1; }
+.ts-fx { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+/* Shared glass control */
+.ts-ctl { background: rgba(5,5,6,0.82); border: 1px solid rgba(255,255,255,0.16); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+/* Layer menu — top-left */
+.ts-menu { position: absolute; top: 20px; left: 20px; z-index: 12; }
+.ts-menu-btn {
+  display: flex; align-items: center; gap: 14px; height: 52px; padding: 0 18px 0 20px; border-radius: 26px; cursor: pointer; color: #F2F2F2; text-align: left;
+  transition: border-color .2s;
+}
+.ts-menu-btn:hover { border-color: rgba(255,255,255,0.36); }
+.ts-menu-btn .k { display: block; font-family: Jura, sans-serif; font-size: 10px; letter-spacing: 0.28em; color: #7FE0F0; }
+.ts-menu-btn .v { display: block; margin-top: 3px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.ts-menu-btn svg { transition: transform .2s; }
+.ts-menu-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ts-menu-list {
+  position: absolute; top: 60px; left: 0; width: 340px; padding: 8px; border-radius: 20px; display: none;
+  background: rgba(5,5,6,0.95); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 18px 50px rgba(0,0,0,0.6);
+}
+.ts-menu-list.open { display: block; }
+.ts-opt { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 3px 12px; padding: 12px 14px; border: 0; border-radius: 14px; background: transparent; cursor: pointer; text-align: left; color: #C9C9CE; transition: background .2s; }
+.ts-opt .sw { grid-row: 1 / 3; width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); transition: transform .2s, box-shadow .2s; }
+.ts-opt:hover .sw { transform: scale(1.08); }
+#simulations .ts-opt:focus-visible { outline: 1px solid var(--oc); outline-offset: -1px; }
+.ts-opt[aria-checked="true"] .sw { box-shadow: 0 0 0 2px #050506, 0 0 0 3px var(--oc); }
+.ts-opt:hover, .ts-opt:focus-visible { background: rgba(255,255,255,0.05); }
+.ts-opt .n { font-size: 14px; }
+.ts-opt .u { font-family: Jura, sans-serif; font-size: 12px; color: #A0A0A8; }
+.ts-opt .s { grid-column: 2 / -1; font-size: 11px; color: #6E6E76; }
+.ts-opt:hover { background: rgba(var(--ocrgb),0.07); }
+.ts-opt[aria-checked="true"] { background: linear-gradient(90deg, rgba(var(--ocrgb),0.16), rgba(var(--ocrgb),0.03)); }
+.ts-opt[aria-checked="true"] .n { color: #F2F2F2; font-weight: 500; }
+.ts-opt[aria-checked="true"] .u { color: var(--oc); }
+.ts-menu-btn .sw { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); transition: background .3s; }
+.ts-menu-btn .k { color: var(--acc, #7FE0F0) !important; transition: color .3s; }
+.ts-menu-btn[aria-expanded="true"] { border-color: rgba(var(--accrgb, 127,224,240),0.55); }
+
+/* Day / Night — top-right */
+.ts-tr { position: absolute; top: 20px; right: 20px; z-index: 12; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.ts-dn { display: flex; padding: 4px; border-radius: 26px; }
+.ts-dn button { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border: 0; border-radius: 21px; background: transparent; color: #A0A0A8; font-size: 13px; cursor: pointer; transition: color .2s, background .2s; }
+.ts-dn button:hover { color: #F2F2F2; }
+.ts-dn button[aria-pressed="true"] { background: linear-gradient(90deg,#7FE0F0,#5B8CFF); color: #000; font-weight: 500; }
+
+/* Loading / error veil */
+.ts-veil { position: absolute; inset: 0; z-index: 11; display: flex; align-items: center; justify-content: center; pointer-events: none; font-family: Jura, sans-serif; font-size: 13px; letter-spacing: 0.24em; color: #C9C9CE; text-transform: uppercase; }
+.ts-veil span { padding: 12px 20px; border-radius: 22px; }
+.ts-veil[hidden] { display: none; }
+
+/* Hover tip */
+.ts-tip {
+  position: absolute; z-index: 13; pointer-events: none; display: none; white-space: nowrap;
+  padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: rgba(5,5,6,0.92);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6); font-size: 12px; transform: translate(14px, -50%);
+}
+.ts-tip b { font-family: Jura, sans-serif; font-weight: 400; letter-spacing: 0.08em; margin-right: 10px; }
+.ts-tip span { color: #7FE0F0; font-weight: 500; }
+
+/* 2 · The number, directly under the frame */
+.ts-under { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; padding-top: 48px; }
+.ts-readout { min-width: 0; }
+.ts-ro-layer { font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.3em; color: #7FE0F0; text-transform: uppercase; }
+.ts-ro-value {
+  margin-top: 14px; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(64px, 9vw, 132px); line-height: 0.92; letter-spacing: 0.01em; white-space: nowrap;
+  background: linear-gradient(90deg,#7FE0F0,#5B8CFF,#9A86B8); -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.ts-ro-place { margin-top: 22px; display: flex; align-items: center; gap: 10px; font-family: Jura, sans-serif; font-size: 14px; letter-spacing: 0.18em; color: #F2F2F2; }
+.ts-ro-place::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: #E9A15A; flex-shrink: 0; }
+.ts-ro-sub { margin-top: 8px; font-size: 13px; line-height: 1.6; color: #A0A0A8; max-width: 620px; }
+.ts-ro-sub b { font-family: Jura, sans-serif; font-weight: 400; letter-spacing: 0.04em; color: #E9A15A; margin-right: 8px; }
+
+.ts-legend { width: 260px; flex-shrink: 0; padding-bottom: 6px; }
+.ts-legend .lbl { font-size: 12px; color: #C9C9CE; }
+.ts-legend .bar { height: 4px; border-radius: 2px; margin-top: 12px; }
+.ts-legend .fx { margin-top: 10px; font-size: 11px; line-height: 1.5; color: #6E6E76; }
+.ts-legend .rng { display: flex; justify-content: space-between; margin-top: 8px; font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #A0A0A8; }
+
+/* 3 · Time — a glass bar inside the frame */
+.sim-time { position: absolute; left: 20px; right: 20px; bottom: 20px; z-index: 12; display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; align-items: center; gap: 24px; padding: 12px 18px 12px 12px; border-radius: 34px; }
+.ts-tl-play { width: 44px; height: 44px; border-radius: 22px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: transparent; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s; }
+.ts-tl-play:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+.ts-tl-year { font-family: Jura, sans-serif; font-size: 30px; font-weight: 300; letter-spacing: 0.04em; color: #F2F2F2; line-height: 1; width: 78px; font-variant-numeric: tabular-nums; }
+.ts-tl-rail { position: relative; height: 16px; }
+.ts-tl-track { position: absolute; left: 0; right: 0; top: 7px; height: 2px; border-radius: 1px; background: rgba(255,255,255,0.12); }
+.ts-tl-rec { position: absolute; left: 0; top: 7px; height: 2px; width: 37.5%; background: rgba(255,255,255,0.18); }
+.ts-tl-fill { position: absolute; left: 0; top: 7px; height: 2px; border-radius: 1px; background: linear-gradient(90deg,#7FE0F0,#5B8CFF,#9A86B8); }
+.ts-tl-now { position: absolute; top: 3px; width: 2px; height: 10px; border-radius: 1px; background: #E9A15A; transform: translateX(-1px); }
+.ts-tl-slider { position: absolute; inset: 0; width: 100%; height: 16px; margin: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; z-index: 2; }
+.ts-tl-slider::-webkit-slider-runnable-track { background: transparent; height: 16px; }
+.ts-tl-slider::-moz-range-track { background: transparent; height: 16px; }
+.ts-tl-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #000; border: 2px solid #F2F2F2; cursor: pointer; }
+.ts-tl-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #000; border: 2px solid #F2F2F2; cursor: pointer; }
+.ts-tl-marks { position: relative; height: 14px; margin-top: 8px; font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.1em; color: #8A8A92; }
+.ts-tl-marks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.ts-tl-marks span:first-child { transform: none; }
+.ts-tl-marks span:last-child { transform: translateX(-100%); }
+.ts-tl-marks .now { color: #E9A15A; }
+.ts-scen { display: flex; gap: 2px; transition: opacity .2s; }
+.ts-scen.off { opacity: 0.35; pointer-events: none; }
+.ts-scen button { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid transparent; background: transparent; color: #A0A0A8; font-size: 12px; cursor: pointer; white-space: nowrap; font-family: Poppins, sans-serif; transition: color .2s, border-color .2s; }
+.ts-scen button:hover { color: #F2F2F2; }
+.ts-scen button[aria-pressed="true"] { color: #F2F2F2; border-color: rgba(255,255,255,0.22); }
+.sim-credit { margin: 48px 0 0; max-width: 820px; font-size: 11px; line-height: 1.7; color: #6E6E76; }
+
+/* 4 · Context */
+.sim-detail { display: grid; grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: 96px; padding-top: 170px; }
+.sim-detail h3 { margin: 18px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(30px, 3.4vw, 44px); letter-spacing: 0.04em; line-height: 1.08; }
+.sim-detail p { margin: 22px 0 0; max-width: 420px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+.sim-link { display: inline-flex; align-items: center; gap: 12px; margin-top: 34px; padding: 6px 0; color: #F2F2F2; font-size: 14px; font-weight: 500; text-decoration: none; }
+.sim-link span { position: relative; padding-bottom: 8px; }
+.sim-link span::after { content: ""; position: absolute; left: 0; bottom: 0; width: 44px; height: 2px; border-radius: 2px; background: #E9A15A; transition: width .25s; }
+.sim-link:hover { color: #F2F2F2; }
+.sim-link:hover span::after { width: 100%; }
+.sim-vars-label { font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.3em; color: #A0A0A8; }
+.ts-subvars { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.ts-tag { height: 32px; padding: 0 13px; border-radius: 16px; display: inline-flex; align-items: center; font-size: 12px; color: #A0A0A8; border: 1px solid rgba(255,255,255,0.1); }
+.ts-tag.on { color: #000; border-color: transparent; background: linear-gradient(90deg,#7FE0F0,#5B8CFF); font-weight: 500; }
+
+.sim-facts { list-style: none; margin: 0; padding-top: 140px; padding-bottom: 170px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 64px; }
+.sim-facts .num { font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(40px, 4.4vw, 60px); line-height: 1; letter-spacing: 0.02em; color: #F2F2F2; }
+.sim-facts .num small { font-size: 0.4em; letter-spacing: 0.08em; color: #A0A0A8; margin-left: 6px; }
+.sim-facts h4 { margin: 22px 0 0; font-size: 15px; font-weight: 500; }
+.sim-facts p { margin: 8px 0 0; max-width: 300px; font-size: 13px; line-height: 1.7; color: #A0A0A8; text-wrap: pretty; }
+
+/* Leaflet theming */
+#terra-sim-engine .leaflet-container { background: #050506 !important; font-family: Poppins, sans-serif; cursor: crosshair; }
+#terra-sim-engine .leaflet-dragging .leaflet-container, #terra-sim-engine .leaflet-container.leaflet-drag-target { cursor: grabbing; }
+#terra-sim-engine .leaflet-control-attribution { display: none !important; }
+#terra-sim-engine .leaflet-top.leaflet-right { top: 82px; right: 20px; }
+#terra-sim-engine .leaflet-control-zoom { border: none !important; margin: 0 !important; display: flex; flex-direction: column; gap: 6px; }
+#terra-sim-engine .leaflet-control-zoom a {
+  width: 38px !important; height: 38px !important; line-height: 36px !important; border-radius: 19px !important;
+  background: rgba(5,5,6,0.82) !important; color: #C9C9CE !important; font-weight: 300 !important;
+  border: 1px solid rgba(255,255,255,0.16) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+#terra-sim-engine .leaflet-control-zoom a:hover { color: #F2F2F2 !important; border-color: rgba(255,255,255,0.4) !important; }
+.ts-field { image-rendering: auto; }
+.ts-beacon { width: 12px; height: 12px; border-radius: 50%; background: #E9A15A; box-shadow: 0 0 0 4px rgba(233,161,90,0.25); animation: tsBeacon 2.4s infinite; }
+@keyframes tsBeacon { 0%,100% { box-shadow: 0 0 0 3px rgba(233,161,90,0.3) } 50% { box-shadow: 0 0 0 9px rgba(233,161,90,0) } }
+
+.sim-reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s ease; }
+.sim-reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .ts-beacon { animation: none; } .sim-reveal { opacity: 1; transform: none; transition: none; } }
+
+@media (max-width: 1000px) {
+  .sim-time { grid-template-columns: auto auto minmax(0,1fr); }
+  .ts-scen { grid-column: 1 / -1; }
+  .sim-detail { gap: 56px; }
+}
+@media (max-width: 820px) {
+  .sim-wrap { padding-left: 20px; padding-right: 20px; }
+  .sim-intro { padding-top: 250px; padding-bottom: 48px; }
+  #terra-sim-engine { height: clamp(460px, 70vh, 640px); }
+  .ts-strip { flex-direction: column; gap: 6px; }
+  .ts-menu { top: 12px; left: 12px; }
+  .ts-tr { top: 72px; right: auto; left: 12px; justify-content: flex-start; max-width: calc(100% - 24px); gap: 8px; }
+  .ts-dn button { height: 36px; padding: 0 12px; }
+  .ts-menu-list { width: min(320px, calc(100vw - 64px)); }
+  #terra-sim-engine .leaflet-top.leaflet-right { top: 12px; right: 12px; }
+  .ts-under { flex-direction: column; align-items: stretch; gap: 32px; padding-top: 36px; }
+  .ts-legend { width: 100%; }
+  .sim-time { left: 10px; right: 10px; bottom: 10px; grid-template-columns: auto minmax(0,1fr); gap: 10px 14px; border-radius: 22px; }
+  .ts-tl-slider-wrap { grid-column: 1 / -1; order: 3; }
+  .ts-scen { order: 4; flex-wrap: wrap; }
+  .sim-detail { grid-template-columns: 1fr; gap: 48px; padding-top: 120px; }
+  .sim-facts { grid-template-columns: 1fr; gap: 56px; padding-top: 96px; padding-bottom: 120px; }
+}
+
+/* Page header row + the "Future predictions" button (simulation page) */
+.sim-intro-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+.sim-intro h1 { margin: 18px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(40px, 5.2vw, 72px); letter-spacing: 0.05em; line-height: 1; }
+.sim-intro .sim-lede { margin: 30px 0 0; max-width: 440px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+.pred-btn { display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 24px 0 26px; border-radius: 26px; background: #7FE0F0; color: #000; text-decoration: none; font-size: 14px; font-weight: 500; flex-shrink: 0; transition: background .2s; }
+.pred-btn:hover { background: #F2F2F2; color: #000; }
+.pred-btn svg { transition: transform .2s; }
+.pred-btn:hover svg { transform: translateX(3px); }
+#simulations .pred-btn:focus-visible { outline-color: #F2F2F2; }
+@media (max-width: 820px) { .sim-intro-row { align-items: flex-start; } }
+@media (max-width: 1100px) and (min-width: 821px) { .sim-intro { padding-top: 210px; } }
+@media (max-width: 560px) { .sim-intro { padding-top: 330px; } }
+
+</style>
+</helmet>
+<div class="sp-page">
+
+  <header style="position:absolute;left:0;right:0;top:18px;z-index:3;padding:0 20px">
+    <div style="max-width:1320px;margin:0 auto;padding:10px 12px 10px 28px;min-height:68px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-radius:34px;background:linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(14,16,20,0.48) 40%, rgba(6,7,10,0.64) 100%);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.05), 0 10px 40px rgba(0,0,0,0.45)">
+      <a href="Home.dc.html" style="display:flex;align-items:baseline;gap:14px;text-decoration:none;color:#F2F2F2">
+        <span style="font-family:Jura, sans-serif;font-size:15px;letter-spacing:0.22em">BENGALURU FROM ORBIT</span>
+        <span aria-hidden="true" style="width:6px;height:6px;border-radius:3px;background:#E9A15A"></span>
+      </a>
+      <nav aria-label="Primary" style="display:flex;gap:4px;flex-wrap:wrap">
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Layers</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">16 Systems</a>
+        <a href="Simulation.dc.html" aria-current="page" style="padding:12px 14px;color:#7FE0F0;text-decoration:none;font-size:13px">Simulations</a>
+        <a href="Compare.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Compare</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Data</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Pipeline</a>
+      </nav>
+      <button type="button" data-action="sound" aria-pressed="false" aria-label="Turn space sound on" style="height:44px;padding:0 18px;border-radius:22px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#F2F2F2;font-size:12px;display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span aria-hidden="true" style="display:flex;align-items:center;gap:2px;height:14px">
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqB"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqC"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+        </span><span data-bind="soundText">Sound off</span>
+      </button>
+    </div>
+  </header>
+
+<!-- ===================== SECTION 4: SIMULATION ===================== -->
+<!-- Framed map (live data) → the number under it → time (record + projection) → context -->
+<section id="simulations" aria-labelledby="simTitle" style="position: relative; --acc: rgb(154,202,198); --accrgb: 154,202,198;">
+
+  <div class="sim-wrap sim-intro sim-reveal in">
+    <div class="sim-intro-row">
+      <div>
+        <p class="sim-eyebrow">Simulation</p>
+        <h1 id="simTitle">ASK THE CITY<br/><span style="background:linear-gradient(90deg,#7FE0F0,#5B8CFF,#9A86B8);-webkit-background-clip:text;background-clip:text;color:transparent">“WHAT IF?”</span></h1>
+        <p class="sim-lede">Live conditions across Karnataka or inside Bengaluru, read point by point. Move back through 46 years of record, or forward into a warming scenario.</p>
+      </div>
+      <a class="pred-btn" href="Main.dc.html">
+        <span>Future predictions</span>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"></path></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="sim-wrap">
+    <div class="ts-strip">
+      <span class="ts-live" id="ts-live" data-state="error">Live data unavailable</span>
+      <span id="ts-region-label">Karnataka · 191,791 km²</span>
+    </div>
+
+    <!-- 1 · The frame -->
+    <div id="terra-sim-engine">
+      <div id="terra-leaflet-map" aria-label="Map of Karnataka coloured by the selected layer" role="application" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 12; transform: translate3d(0px, 0px, 0px) scale(0.707107);"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon ts-beacon leaflet-zoom-animated" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(708px, 461px, 0px); z-index: 461;"></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(16498.4px, 10614.8px, 0px) scale(45.2548);"></div><div class="leaflet-pane leaflet-cut-pane" style="z-index: 450; pointer-events: none;"><svg pointer-events="none" class="leaflet-zoom-animated" width="1505" height="799" viewBox="-125 -67 1505 799" style="transform: translate3d(-125px, -67px, 0px);"><g><path stroke="#F2F2F2" stroke-opacity="0.85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M485 283L488 283L489 281L490 283L493 283L493 289L495 291L493 294L495 300L498 302L497 305L499 307L493 309L497 314L495 317L496 324L490 332L488 329L487 332L483 333L485 337L485 340L483 340L490 345L492 343L494 345L494 351L497 357L500 359L510 394L512 397L514 396L520 417L522 436L532 473L534 475L542 473L540 477L545 478L544 481L547 481L547 479L551 480L550 483L554 484L556 488L559 484L562 486L559 488L559 490L563 492L563 495L565 495L566 492L568 492L568 495L565 495L565 499L569 501L568 506L573 506L580 516L582 515L584 519L587 518L587 521L593 520L593 523L597 528L606 530L613 527L614 535L618 534L620 538L624 538L628 542L632 541L633 547L639 545L642 550L645 551L655 550L661 552L660 548L664 540L668 540L669 538L672 538L672 540L674 539L675 543L678 544L677 540L686 539L686 537L692 540L696 539L698 541L702 529L705 530L714 528L720 518L717 513L701 511L701 507L706 506L710 501L711 493L708 494L710 492L707 489L709 481L718 481L719 477L721 476L720 475L722 473L722 470L730 466L731 468L729 471L731 471L731 469L734 472L736 469L738 469L743 474L749 475L751 468L755 469L757 463L763 465L764 468L765 466L761 464L763 461L765 461L764 456L768 455L768 451L772 448L770 446L772 445L772 441L771 439L769 442L765 439L766 438L763 439L759 437L761 436L758 435L760 420L750 420L747 422L748 418L740 417L739 413L742 413L740 410L743 407L742 402L738 400L737 402L735 401L731 405L731 401L733 400L734 396L732 396L730 399L723 397L722 399L724 402L716 406L716 410L715 408L713 409L714 407L712 407L710 409L711 410L706 411L705 409L704 413L701 412L702 414L699 414L700 406L697 406L698 403L687 403L685 399L683 402L682 398L681 402L678 403L681 404L681 409L674 410L672 408L671 410L669 405L673 398L666 391L666 389L669 388L665 384L663 384L663 382L666 382L667 380L672 381L672 389L678 390L680 393L691 391L693 394L693 399L697 400L698 395L695 395L695 392L692 391L696 385L692 386L696 382L703 383L702 375L699 374L699 372L695 371L694 373L697 379L695 380L693 378L694 375L688 374L689 370L685 372L680 370L677 378L675 379L673 377L666 377L665 375L667 374L663 370L663 367L665 365L666 367L669 361L662 362L661 359L658 358L655 353L657 344L656 341L661 339L660 334L662 329L659 330L655 327L657 320L662 323L662 325L669 326L670 324L673 324L673 326L675 326L681 315L678 311L681 309L678 307L677 304L674 305L672 297L668 293L672 293L672 284L678 284L675 278L673 278L674 271L672 271L675 266L682 263L698 263L703 265L703 254L701 249L703 245L702 244L703 241L705 242L706 240L709 240L708 237L702 234L693 234L685 228L694 227L694 225L697 225L697 223L695 222L700 220L699 218L701 216L698 217L697 215L700 214L701 212L698 211L698 207L701 207L699 198L701 193L703 192L700 185L694 182L694 179L696 179L695 178L700 174L698 173L699 167L701 169L704 168L705 165L703 164L707 164L707 162L710 163L712 158L712 160L714 161L715 159L709 157L708 155L704 154L703 156L702 154L699 153L699 146L707 142L703 140L704 137L706 137L707 134L709 134L708 131L710 132L710 128L712 129L712 125L708 124L705 121L709 119L709 115L706 112L709 106L703 104L703 106L700 107L698 104L694 104L693 103L696 102L697 99L694 98L694 95L692 96L691 94L686 97L686 100L683 104L684 106L681 106L680 110L676 112L677 115L674 115L672 113L670 114L670 112L667 112L665 117L668 119L667 122L664 124L665 131L660 132L658 134L653 132L653 135L657 137L655 140L652 140L653 143L650 147L645 141L643 145L643 141L639 141L640 144L637 144L637 148L633 149L633 152L627 152L629 158L628 159L630 160L627 161L627 163L630 163L629 167L632 168L629 172L628 169L624 170L621 167L617 169L617 172L616 169L613 168L611 170L607 169L601 171L599 169L598 164L597 167L594 164L594 168L592 168L589 164L586 165L585 162L582 161L580 164L581 166L578 167L579 169L581 169L580 172L584 175L582 181L583 185L585 185L585 188L583 190L585 190L585 195L581 195L580 192L578 192L578 195L573 196L571 193L569 195L567 194L559 196L560 201L555 203L553 203L554 201L550 201L547 196L543 198L543 196L539 196L539 198L537 196L536 197L539 199L539 201L535 202L536 208L532 208L522 212L519 217L521 219L518 219L518 221L514 223L512 217L509 218L507 215L507 219L503 221L502 224L500 222L497 223L497 226L494 223L495 226L493 226L494 228L496 226L496 229L498 229L500 235L499 233L497 234L497 238L499 240L498 242L500 241L499 240L501 242L504 241L504 243L508 243L510 247L508 250L508 254L505 252L500 256L507 257L505 263L502 266L503 269L502 270L501 267L499 269L502 270L500 272L501 274L495 277L492 277L492 274L485 278L485 281L483 282z"></path></g></svg></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"></div></div></div>
+      
+      <div class="ts-tip" id="ts-tip" aria-hidden="true"></div>
+      <div class="ts-veil" id="ts-veil"><span class="ts-ctl" id="ts-veil-text">Live data unavailable</span></div>
+
+      <div class="ts-menu" id="ts-menu">
+        <button type="button" class="ts-menu-btn ts-ctl" id="ts-menu-btn" aria-haspopup="true" aria-expanded="false" aria-controls="ts-menu-list">
+          <span class="sw" id="ts-menu-sw" aria-hidden="true" style="background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 45%), conic-gradient(from 210deg, rgb(91, 140, 255), rgb(127, 224, 240), rgb(224, 144, 90), rgb(244, 194, 124), rgb(69, 107, 200));"></span>
+          <span><span class="k">LAYER</span><span class="v" id="ts-menu-current">Air temperature</span></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9C9CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+        <div class="ts-menu-list" id="ts-menu-list" role="menu" aria-label="Map layer"><button type="button" class="ts-opt" role="menuitemradio" aria-checked="true" data-layer="air" style="--oc:rgb(154,202,198);--ocrgb:154,202,198">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(91,140,255),rgb(127,224,240),rgb(224,144,90),rgb(244,194,124),rgb(69,107,200))"></span>
+         <span class="n">Air temperature</span><span class="u">°C</span><span class="s">2 m above ground · ECMWF / GFS</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="surf" style="--oc:rgb(208,142,111);--ocrgb:208,142,111">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(154,134,184),rgb(224,144,90),rgb(250,214,150),rgb(105,89,135))"></span>
+         <span class="n">Ground surface temperature</span><span class="u">°C</span><span class="s">Soil skin, 0 cm · ECMWF / GFS</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="rain" style="--oc:rgb(121,215,241);--ocrgb:121,215,241">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(47,107,255),rgb(127,224,240),rgb(230,250,255),rgb(40,88,210))"></span>
+         <span class="n">Rainfall · last 30 days</span><span class="u">mm</span><span class="s">Daily totals summed · ECMWF / GFS</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="rh" style="--oc:rgb(120,200,225);--ocrgb:120,200,225">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(95,196,216),rgb(200,214,255),rgb(62,96,122))"></span>
+         <span class="n">Relative humidity</span><span class="u">%</span><span class="s">2 m above ground · ECMWF / GFS</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="wind" style="--oc:rgb(173,234,249);--ocrgb:173,234,249">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(127,224,240),rgb(200,240,255),rgb(255,255,255),rgb(94,147,190))"></span>
+         <span class="n">Wind speed</span><span class="u">m/s</span><span class="s">10 m above ground · ECMWF / GFS</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="pm25" style="--oc:rgb(174,137,158);--ocrgb:174,137,158">
+         <span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(95,196,216),rgb(154,134,184),rgb(224,144,90),rgb(244,120,90),rgb(80,165,185))"></span>
+         <span class="n">PM2.5 air pollution</span><span class="u">µg/m³</span><span class="s">Fine particulates · Copernicus CAMS</span></button></div>
+      </div>
+
+      <!-- 3 · Time (inside the frame) -->
+      <div class="sim-time ts-ctl">
+        <button type="button" class="ts-tl-play" id="ts-tl-play" aria-label="Play timeline" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2F2F2" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"></path></svg></button>
+        <div class="ts-tl-year" id="ts-tl-year">2026</div>
+        <div class="ts-tl-slider-wrap">
+          <div class="ts-tl-rail">
+            <div class="ts-tl-track"></div>
+            <div class="ts-tl-rec" aria-hidden="true"></div>
+            <div class="ts-tl-fill" id="ts-tl-fill" style="width: 38.3333%;"></div>
+            <div class="ts-tl-now" style="left:38.3%" aria-hidden="true"></div>
+            <input type="range" class="ts-tl-slider" id="ts-tl-slider" min="1980" max="2100" value="2026" aria-label="Year: 1980 to 2025 is the observed record, 2026 is live, later years are projections">
+          </div>
+          <div class="ts-tl-marks" aria-hidden="true">
+            <span style="left:0">1980 · RECORD</span>
+            <span class="now" style="left:38.3%">LIVE</span>
+            <span style="left:58.3%">2050</span>
+            <span style="left:100%">2100</span>
+          </div>
+        </div>
+        <div class="ts-scen off" id="ts-scen" role="group" aria-label="Emissions scenario">
+          <button type="button" data-scen="ssp126" aria-pressed="false" title="SSP1-2.6">Low emissions</button>
+          <button type="button" data-scen="ssp245" aria-pressed="true" title="SSP2-4.5">Middle road</button>
+          <button type="button" data-scen="ssp585" aria-pressed="false" title="SSP5-8.5">High emissions</button>
+        </div>
+      </div>
+
+      <div class="ts-tr">
+      <div class="ts-dn ts-ctl" role="group" aria-label="Region">
+        <button type="button" data-region="ka" aria-pressed="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"></path><path d="M9 3v15M15 6v15"></path></svg>Karnataka</button>
+        <button type="button" data-region="blr" aria-pressed="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V9l5-3v15M9 21V4l7 3v14M16 21v-9l4 2v7M2 21h20"></path></svg>Bengaluru</button>
+      </div>
+      <div class="ts-dn ts-ctl" role="group" aria-label="Basemap">
+        <button type="button" data-basemap="day" aria-pressed="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>Day</button>
+        <button type="button" data-basemap="night" aria-pressed="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"></path></svg>Night</button>
+      </div>
+      </div>
+    </div>
+
+    <!-- 2 · The number -->
+    <div class="ts-under">
+      <div class="ts-readout" aria-live="polite">
+        <div class="ts-ro-layer" id="ts-ro-layer">Air temperature · Live</div>
+        <div class="ts-ro-value" id="ts-ro-value">—</div>
+        <div class="ts-ro-place"><span id="ts-ro-place">BENGALURU</span></div>
+        <div class="ts-ro-sub" id="ts-ro-delta">Live data is unavailable right now — check your connection and reload.</div>
+      </div>
+      <div class="ts-legend" aria-hidden="true">
+        <div class="lbl" id="ts-legend-label">Air temperature (°C)</div>
+        <div class="bar" id="ts-legend-bar" style="background: linear-gradient(90deg, rgb(24, 40, 90) 0%, rgb(91, 140, 255) 30%, rgb(127, 224, 240) 55%, rgb(224, 144, 90) 80%, rgb(244, 194, 124) 100%);"></div>
+        <div class="rng"><span id="ts-legend-min">14.0 °C</span><span id="ts-legend-max">38.0 °C</span></div>
+        <div class="fx" id="ts-legend-fx">Colour: temperature · lines every 2 °C</div>
+      </div>
+    </div>
+
+    <p class="sim-credit">Live: Open-Meteo (ECMWF / GFS weather models, CAMS air quality), 99-point grid across Karnataka. Record 1980–2025: ERA5 reanalysis, annual means at Bengaluru. Projections: IPCC AR6 WGI Table SPM.1 central estimates of global warming, added to Bengaluru’s 2016–2025 mean. State boundary: geoBoundaries (DataMeet / Election Commission of India, CC BY 2.5 IN). Night basemap: NASA Black Marble (VIIRS). Day basemap: Esri, Maxar, Earthstar Geographics.</p>
+  </div>
+
+  <!-- 4 · Context -->
+  <div class="sim-wrap sim-detail sim-reveal in">
+    <div>
+      <p class="sim-eyebrow" id="ts-about-eyebrow">System 01</p>
+      <h3 id="ts-about-name">Temperature</h3>
+      <p id="ts-about-desc">How warm the air and the ground get, and how that is shifting decade by decade.</p>
+      <a class="sim-link" href="Home.dc.html"><span>Browse all 16 systems</span>
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#E9A15A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"></path></svg>
+      </a>
+    </div>
+    <div>
+      <div class="sim-vars-label">VARIABLES IN THIS SYSTEM · <span id="ts-var-count">6</span></div>
+      <div class="ts-subvars" id="ts-subvars"><span class="ts-tag on">Air temperature</span><span class="ts-tag">Land surface temperature</span><span class="ts-tag">Sea surface temperature</span><span class="ts-tag">Temperature anomalies</span><span class="ts-tag">Temperature trends</span><span class="ts-tag">Urban heat islands</span></div>
+    </div>
+  </div>
+
+  <ul class="sim-wrap sim-facts sim-reveal in" aria-label="Regional notes">
+    <li>
+      <div class="num">~70<small>%</small></div>
+      <h4>Monsoon sensitivity</h4>
+      <p>The southwest monsoon delivers about 70% of Karnataka’s annual rainfall.</p>
+    </li>
+    <li>
+      <div class="num">3,000<small>vs 600 mm</small></div>
+      <h4>Western Ghats ridge</h4>
+      <p>A sharp rain divide between the coast and the eastern plains. Switch to Rainfall to see it live.</p>
+    </li>
+    <li>
+      <div class="num">1.4<small>cm / yr</small></div>
+      <h4>Groundwater stress</h4>
+      <p>Urban aquifers are estimated to be falling about this much every year.</p>
+    </li>
+  </ul>
+</section>
+
+
+<footer class="sp-footer">
+      <span>Bengaluru From Orbit · Planetary &amp; Regional Environmental Engine</span>
+      <span>NASA POWER, MODIS, GPM · Open-Meteo · ECMWF · IPCC AR6</span>
+      <nav aria-label="Footer"><a href="Home.dc.html">Layers</a><a href="Home.dc.html">16 Systems</a><a href="Simulation.dc.html">Simulations</a><a href="Compare.dc.html">Compare</a><a href="Main.dc.html">Predictions</a><a href="Home.dc.html">Data</a></nav>
+    </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2648}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

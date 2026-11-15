@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compare — Bengaluru From Orbit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:"Jura";src:url("/_blob/74ac33ad597c75f6f5cce3ca148bf5c6") format("woff2");font-weight:300 700;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/be326da0939a8ed4475105466956b08c") format("woff2");font-weight:300;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/a85cab6fcd19b140ca19b662e93f465d") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Poppins";src:url("/_blob/016814f1086ea4b56998dd5e8b0629ab") format("woff2");font-weight:500;font-display:swap}
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: none;
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: none;
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: none;
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: none;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+body { margin: 0; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow-x: hidden; }
+a { color: #7FE0F0; transition: color 0.2s; }
+a:hover { color: #F2F2F2; }
+button { font-family: inherit; }
+@keyframes eqA { 0%,100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+@keyframes eqB { 0%,100% { transform: scaleY(.8); } 50% { transform: scaleY(.3); } }
+@keyframes eqC { 0%,100% { transform: scaleY(.5); } 50% { transform: scaleY(.95); } }
+@keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(127,224,240,0.4); }
+
+/* Sub-page shell: same black page and navigation bar as the home page */
+.sp-page { position: relative; background: #000; color: #F2F2F2; font-family: Poppins, system-ui, sans-serif; min-width: 320px; overflow: hidden; }
+.sp-page > header { position: absolute; left: 0; right: 0; top: 18px; z-index: 30; padding: 0 20px; }
+.sp-footer { max-width: 1320px; margin: 0 auto; padding: 28px 32px 56px; box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 12px; color: #A0A0A8; }
+.sp-footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.sp-footer a { color: #C9C9CE; text-decoration: none; }
+.sp-footer a:hover { color: #7FE0F0; }
+.sp-foot-wrap { padding: 0 0; }
+@media (max-width: 820px) { .sp-footer { padding: 24px 20px 40px; } }
+
+/* ==========================================================================
+   Compare — past against present, same place, same colour scale.
+   Reuses the simulation's controls (layer menu, toggles), map theme and effects.
+   Reading order: 1 controls → 2 the two moments, split → 3 what changed → 4 every layer in a table
+   Optional: all 16 systems at once (off by default; static, no animation).
+   ========================================================================== */
+.cmp-wrap { max-width: 1320px; margin: 0 auto; padding-left: 32px; padding-right: 32px; box-sizing: border-box; }
+.cmp-eyebrow { margin: 0; font-family: Jura, sans-serif; font-size: 14px; letter-spacing: 0.36em; color: #7FE0F0; text-transform: uppercase; }
+.cmp-page :focus-visible { outline: 2px solid #7FE0F0; outline-offset: 2px; }
+.ts-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Intro */
+.cmp-intro { padding-top: 170px; padding-bottom: 56px; }
+.cmp-intro h1 { margin: 18px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(40px, 5.2vw, 72px); letter-spacing: 0.05em; line-height: 1; }
+.cmp-intro h1 .a { color: #E9A15A; } .cmp-intro h1 .b { color: #7FE0F0; }
+.cmp-lede { margin: 30px 0 0; max-width: 520px; font-size: 15px; line-height: 1.75; color: #B4B4BC; text-wrap: pretty; }
+
+/* Controls */
+.cmp-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 16px; padding-bottom: 20px; }
+.cmp-bar .ts-menu { position: relative; top: auto; left: auto; z-index: 40; }
+.cmp-bar .ts-menu-list { top: 60px; }
+.cmp-bar .ts-dn { position: static; }
+.cmp-when { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding-bottom: 40px; font-size: 12px; color: #A0A0A8; }
+.cmp-when .lbl { font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.28em; color: #E9A15A; margin-right: 6px; text-transform: uppercase; }
+.cmp-chip { height: 36px; padding: 0 16px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.16); background: transparent; color: #C9C9CE; font-size: 12px; cursor: pointer; transition: color .2s, border-color .2s; }
+.cmp-chip:hover { color: #F2F2F2; border-color: rgba(255,255,255,0.4); }
+.cmp-chip[aria-pressed="true"] { background: #E9A15A; border-color: #E9A15A; color: #000; font-weight: 500; }
+.cmp-date { height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.16); background: #050506; color: #F2F2F2; font-size: 12px; font-family: Poppins, sans-serif; color-scheme: dark; cursor: pointer; }
+.cmp-date:hover { border-color: rgba(255,255,255,0.4); }
+.cmp-hint { flex-basis: 100%; margin-top: 2px; font-size: 11px; color: #6E6E76; }
+
+/* Split view */
+.cmp-strip { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 14px; font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.2em; color: #A0A0A8; text-transform: uppercase; }
+.ts-live { display: inline-flex; align-items: center; gap: 10px; }
+.ts-live::before { content: ""; width: 6px; height: 6px; border-radius: 3px; background: #6E6E76; }
+.ts-live[data-state="live"]::before { background: #7FE0F0; box-shadow: 0 0 0 3px rgba(127,224,240,0.2); }
+.ts-live[data-state="error"]::before { background: #E9A15A; }
+.cmp-grid { --fh: clamp(440px, 64vh, 760px); position: relative; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.cmp-pane { margin: 0; min-width: 0; }
+.cmp-frame { position: relative; overflow: hidden; height: var(--fh); background: #050506; border: 1px solid rgba(255,255,255,0.16); }
+.cmp-map { position: absolute; inset: 0; z-index: 1; }
+.cmp-fx { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+.cmp-chiprow { position: absolute; top: 16px; left: 16px; z-index: 12; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 18px; border-radius: 20px; }
+.cmp-chiprow b { font-family: Jura, sans-serif; font-weight: 400; font-size: 12px; letter-spacing: 0.28em; }
+.cmp-chiprow span { font-size: 12px; color: #C9C9CE; }
+.cmp-pane.past .cmp-chiprow b { color: #E9A15A; }
+.cmp-pane.now .cmp-chiprow b { color: #7FE0F0; }
+.cmp-frame .leaflet-top.leaflet-right { top: 16px; right: 16px; }
+.cmp-veil { position: absolute; inset: 0; z-index: 11; display: flex; align-items: center; justify-content: center; pointer-events: none; font-family: Jura, sans-serif; font-size: 13px; letter-spacing: 0.24em; color: #C9C9CE; text-transform: uppercase; }
+.cmp-veil[hidden] { display: none; }
+.cmp-veil span { padding: 12px 20px; border-radius: 22px; text-align: center; max-width: 80%; line-height: 1.6; }
+.cmp-read { padding-top: 32px; }
+.cmp-k { font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; }
+.cmp-pane.past .cmp-k { color: #E9A15A; } .cmp-pane.now .cmp-k { color: #7FE0F0; }
+.cmp-big { margin-top: 12px; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(52px, 6.4vw, 96px); line-height: 0.95; letter-spacing: 0.01em; color: #F2F2F2; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cmp-sub { margin-top: 14px; font-size: 13px; line-height: 1.65; color: #A0A0A8; max-width: 460px; }
+
+/* The timeline: one glass bar across the bottom of both maps (same bar as the simulation page) */
+.cmp-time { position: absolute; left: 16px; right: 16px; top: calc(var(--fh) - 96px); z-index: 20; display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; align-items: center; gap: 24px; padding: 12px 18px 12px 12px; border-radius: 34px; }
+.ts-tl-play { width: 44px; height: 44px; border-radius: 22px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: transparent; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s; }
+.ts-tl-play:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+.ts-tl-year { font-family: Jura, sans-serif; font-size: 30px; font-weight: 300; letter-spacing: 0.04em; color: #F2F2F2; line-height: 1; width: 78px; font-variant-numeric: tabular-nums; }
+.ts-tl-rail { position: relative; height: 16px; }
+.ts-tl-track { position: absolute; left: 0; right: 0; top: 7px; height: 2px; border-radius: 1px; background: rgba(255,255,255,0.12); }
+.ts-tl-rec { position: absolute; left: 0; top: 7px; height: 2px; width: 37.5%; background: rgba(255,255,255,0.18); }
+.ts-tl-fill { position: absolute; left: 0; top: 7px; height: 2px; border-radius: 1px; background: linear-gradient(90deg,#7FE0F0,#5B8CFF,#9A86B8); }
+.ts-tl-now { position: absolute; top: 3px; width: 2px; height: 10px; border-radius: 1px; background: #E9A15A; transform: translateX(-1px); }
+.ts-tl-slider { position: absolute; inset: 0; width: 100%; height: 16px; margin: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; z-index: 2; }
+.ts-tl-slider::-webkit-slider-runnable-track { background: transparent; height: 16px; }
+.ts-tl-slider::-moz-range-track { background: transparent; height: 16px; }
+.ts-tl-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #000; border: 2px solid #F2F2F2; cursor: pointer; }
+.ts-tl-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #000; border: 2px solid #F2F2F2; cursor: pointer; }
+.ts-tl-marks { position: relative; height: 14px; margin-top: 8px; font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.1em; color: #8A8A92; }
+.ts-tl-marks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.ts-tl-marks span:first-child { transform: none; }
+.ts-tl-marks span:last-child { transform: translateX(-100%); }
+.ts-tl-marks .now { color: #E9A15A; }
+.ts-scen { display: flex; gap: 2px; transition: opacity .2s; }
+.ts-scen.off { opacity: 0.35; pointer-events: none; }
+.ts-scen button { height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid transparent; background: transparent; color: #A0A0A8; font-size: 12px; cursor: pointer; white-space: nowrap; font-family: Poppins, sans-serif; transition: color .2s, border-color .2s; }
+.ts-scen button:hover { color: #F2F2F2; }
+.ts-scen button[aria-pressed="true"] { color: #F2F2F2; border-color: rgba(255,255,255,0.22); }
+
+/* 3 · What changed */
+.cmp-delta { padding-top: 72px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 64px; align-items: end; }
+.cmp-delta h2 { margin: 14px 0 0; font-family: Jura, sans-serif; font-weight: 300; font-size: clamp(28px, 3.2vw, 44px); letter-spacing: 0.03em; line-height: 1.12; text-wrap: balance; }
+.cmp-delta h2 em { font-style: normal; color: #E9A15A; }
+.cmp-delta p { margin: 18px 0 0; max-width: 560px; font-size: 14px; line-height: 1.7; color: #A0A0A8; text-wrap: pretty; }
+.ts-legend { width: 100%; }
+.ts-legend .lbl { font-size: 12px; color: #C9C9CE; }
+.ts-legend .bar { height: 4px; border-radius: 2px; margin-top: 12px; }
+.ts-legend .rng { display: flex; justify-content: space-between; margin-top: 8px; font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #A0A0A8; }
+.ts-legend .fx { margin-top: 10px; font-size: 11px; line-height: 1.5; color: #6E6E76; }
+
+/* 4 · Every layer */
+.cmp-table-wrap { padding-top: 120px; }
+.cmp-table { width: 100%; border-collapse: collapse; margin-top: 28px; }
+.cmp-table th { text-align: left; padding: 0 0 14px; font-family: Jura, sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.24em; color: #6E6E76; text-transform: uppercase; }
+.cmp-table th.past { color: #E9A15A; } .cmp-table th.now { color: #7FE0F0; }
+.cmp-table td { padding: 18px 0; border-top: 1px solid rgba(255,255,255,0.07); font-size: 14px; color: #C9C9CE; vertical-align: baseline; font-variant-numeric: tabular-nums; }
+.cmp-table td.v { font-family: Jura, sans-serif; font-size: 22px; font-weight: 300; color: #F2F2F2; }
+.cmp-table td.d { font-family: Jura, sans-serif; font-size: 16px; color: #E9A15A; }
+.cmp-table td.na { color: #6E6E76; font-size: 13px; }
+.cmp-table tr.cur td:first-child { color: #F2F2F2; }
+.cmp-table tr.cur td:first-child::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 3px; background: #7FE0F0; margin: 0 10px 2px 0; }
+.cmp-table-wrap p { margin: 22px 0 0; max-width: 760px; font-size: 11px; line-height: 1.75; color: #6E6E76; }
+
+/* Optional: all 16 systems */
+.cmp-all { padding-top: 8px; }
+.cmp-all[hidden], .cmp-split[hidden] { display: none; }
+.cmp-all-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 28px; padding-top: 12px; }
+.cmp-tile { min-width: 0; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); }
+.cmp-tile h3 { margin: 0; display: flex; align-items: baseline; gap: 12px; font-size: 14px; font-weight: 500; color: #F2F2F2; }
+.cmp-tile h3 i { font-style: normal; font-family: Jura, sans-serif; font-size: 12px; letter-spacing: 0.1em; color: #6E6E76; }
+.cmp-tile .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.cmp-tile canvas { display: block; width: 100%; height: auto; background: #050506; border: 1px solid rgba(255,255,255,0.1); }
+.cmp-tile .cap { display: flex; justify-content: space-between; margin-top: 8px; font-family: Jura, sans-serif; font-size: 11px; letter-spacing: 0.12em; color: #8A8A92; }
+.cmp-tile .cap b { font-weight: 400; color: #F2F2F2; }
+.cmp-tile .cap .p { color: #E9A15A; } .cmp-tile .cap .n { color: #7FE0F0; }
+.cmp-tile .chg { margin-top: 10px; font-size: 12px; color: #A0A0A8; }
+.cmp-tile .chg b { font-family: Jura, sans-serif; font-weight: 400; color: #E9A15A; letter-spacing: 0.04em; margin-right: 6px; }
+.cmp-tile .lyr { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.cmp-tile .lyr button { height: 26px; padding: 0 11px; border-radius: 13px; border: 1px solid rgba(255,255,255,0.14); background: transparent; color: #A0A0A8; font-size: 11px; cursor: pointer; }
+.cmp-tile .lyr button[aria-pressed="true"] { background: #7FE0F0; border-color: #7FE0F0; color: #000; }
+.cmp-tile.off h3 { color: #8A8A92; }
+.cmp-tile .none { margin-top: 14px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 0 2px; font-size: 12px; line-height: 1.6; color: #6E6E76; }
+.cmp-tile .none b { font-family: Jura, sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.24em; color: #8A8A92; text-transform: uppercase; }
+.cmp-tile .none a { color: #7FE0F0; text-decoration: none; font-size: 13px; }
+.cmp-tile .none a:hover { color: #F2F2F2; }
+
+.cmp-foot { padding-top: 130px; padding-bottom: 150px; }
+.cmp-reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s ease; }
+.cmp-reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .cmp-reveal { opacity: 1; transform: none; transition: none; } .ts-beacon { animation: none; } }
+
+/* Shared glass control */
+.ts-ctl { background: rgba(5,5,6,0.82); border: 1px solid rgba(255,255,255,0.16); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+/* Layer menu — top-left */
+.ts-menu { position: absolute; top: 20px; left: 20px; z-index: 12; }
+.ts-menu-btn {
+  display: flex; align-items: center; gap: 14px; height: 52px; padding: 0 18px 0 20px; border-radius: 26px; cursor: pointer; color: #F2F2F2; text-align: left;
+  transition: border-color .2s;
+}
+.ts-menu-btn:hover { border-color: rgba(255,255,255,0.36); }
+.ts-menu-btn .k { display: block; font-family: Jura, sans-serif; font-size: 10px; letter-spacing: 0.28em; color: #7FE0F0; }
+.ts-menu-btn .v { display: block; margin-top: 3px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.ts-menu-btn svg { transition: transform .2s; }
+.ts-menu-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ts-menu-list {
+  position: absolute; top: 60px; left: 0; width: 340px; padding: 8px; border-radius: 20px; display: none;
+  background: rgba(5,5,6,0.95); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 18px 50px rgba(0,0,0,0.6);
+}
+.ts-menu-list.open { display: block; }
+.ts-opt { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 3px 12px; padding: 12px 14px; border: 0; border-radius: 14px; background: transparent; cursor: pointer; text-align: left; color: #C9C9CE; transition: background .2s; }
+.ts-opt .sw { grid-row: 1 / 3; width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); transition: transform .2s, box-shadow .2s; }
+.ts-opt:hover .sw { transform: scale(1.08); }
+#simulations .ts-opt:focus-visible { outline: 1px solid var(--oc); outline-offset: -1px; }
+.ts-opt[aria-checked="true"] .sw { box-shadow: 0 0 0 2px #050506, 0 0 0 3px var(--oc); }
+.ts-opt:hover, .ts-opt:focus-visible { background: rgba(255,255,255,0.05); }
+.ts-opt .n { font-size: 14px; }
+.ts-opt .u { font-family: Jura, sans-serif; font-size: 12px; color: #A0A0A8; }
+.ts-opt .s { grid-column: 2 / -1; font-size: 11px; color: #6E6E76; }
+.ts-opt:hover { background: rgba(var(--ocrgb),0.07); }
+.ts-opt[aria-checked="true"] { background: linear-gradient(90deg, rgba(var(--ocrgb),0.16), rgba(var(--ocrgb),0.03)); }
+.ts-opt[aria-checked="true"] .n { color: #F2F2F2; font-weight: 500; }
+.ts-opt[aria-checked="true"] .u { color: var(--oc); }
+.ts-menu-btn .sw { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); transition: background .3s; }
+.ts-menu-btn .k { color: var(--acc, #7FE0F0) !important; transition: color .3s; }
+.ts-menu-btn[aria-expanded="true"] { border-color: rgba(var(--accrgb, 127,224,240),0.55); }
+
+/* Day / Night — top-right */
+.ts-tr { position: absolute; top: 20px; right: 20px; z-index: 12; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.ts-dn { display: flex; padding: 4px; border-radius: 26px; }
+.ts-dn button { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border: 0; border-radius: 21px; background: transparent; color: #A0A0A8; font-size: 13px; cursor: pointer; transition: color .2s, background .2s; }
+.ts-dn button:hover { color: #F2F2F2; }
+.ts-dn button[aria-pressed="true"] { background: linear-gradient(90deg,#7FE0F0,#5B8CFF); color: #000; font-weight: 500; }
+
+/* Hover tip */
+.ts-tip {
+  position: absolute; z-index: 13; pointer-events: none; display: none; white-space: nowrap;
+  padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); background: rgba(5,5,6,0.92);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6); font-size: 12px; transform: translate(14px, -50%);
+}
+.ts-tip b { font-family: Jura, sans-serif; font-weight: 400; letter-spacing: 0.08em; margin-right: 10px; }
+.ts-tip span { color: #7FE0F0; font-weight: 500; }
+
+/* Leaflet theming */
+.cmp-frame .leaflet-container { background: #050506 !important; font-family: Poppins, sans-serif; cursor: crosshair; }
+.cmp-frame .leaflet-dragging .leaflet-container, .cmp-frame .leaflet-container.leaflet-drag-target { cursor: grabbing; }
+.cmp-frame .leaflet-control-attribution { display: none !important; }
+.cmp-frame .leaflet-control-zoom { border: none !important; margin: 0 !important; display: flex; flex-direction: column; gap: 6px; }
+.cmp-frame .leaflet-control-zoom a {
+  width: 38px !important; height: 38px !important; line-height: 36px !important; border-radius: 19px !important;
+  background: rgba(5,5,6,0.82) !important; color: #C9C9CE !important; font-weight: 300 !important;
+  border: 1px solid rgba(255,255,255,0.16) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+.cmp-frame .leaflet-control-zoom a:hover { color: #F2F2F2 !important; border-color: rgba(255,255,255,0.4) !important; }
+.ts-field { image-rendering: auto; }
+.ts-beacon { width: 12px; height: 12px; border-radius: 50%; background: #E9A15A; box-shadow: 0 0 0 4px rgba(233,161,90,0.25); animation: tsBeacon 2.4s infinite; }
+@keyframes tsBeacon { 0%,100% { box-shadow: 0 0 0 3px rgba(233,161,90,0.3) } 50% { box-shadow: 0 0 0 9px rgba(233,161,90,0) } }
+
+
+@media (max-width: 1100px) { .cmp-time { grid-template-columns: auto auto minmax(0,1fr); } .cmp-time .ts-scen { grid-column: 1 / -1; } .cmp-intro { padding-top: 210px; } .cmp-all-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .cmp-all-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cmp-delta { grid-template-columns: 1fr; gap: 40px; } }
+@media (max-width: 820px) {
+  .cmp-wrap { padding-left: 20px; padding-right: 20px; }
+  .cmp-intro { padding-top: 250px; padding-bottom: 40px; }
+  .cmp-grid { --fh: clamp(380px, 56vh, 560px); grid-template-columns: 1fr; }
+  .cmp-time { position: static; grid-column: 1; margin-top: 8px; grid-template-columns: auto minmax(0,1fr); gap: 10px 14px; border-radius: 22px; }
+  .cmp-time .ts-tl-slider-wrap { grid-column: 1 / -1; order: 3; }
+  .cmp-time .ts-scen { order: 4; flex-wrap: wrap; }
+  .cmp-strip { flex-direction: column; gap: 6px; }
+  .cmp-table-wrap { padding-top: 90px; }
+  .cmp-table td.v { font-size: 18px; }
+  .cmp-bar .ts-menu-list { width: min(320px, calc(100vw - 40px)); }
+}
+@media (max-width: 560px) { .cmp-intro { padding-top: 330px; } .cmp-all-grid { grid-template-columns: 1fr; } }
+
+</style>
+</helmet>
+<div class="sp-page">
+
+  <header style="position:absolute;left:0;right:0;top:18px;z-index:3;padding:0 20px">
+    <div style="max-width:1320px;margin:0 auto;padding:10px 12px 10px 28px;min-height:68px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-radius:34px;background:linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(14,16,20,0.48) 40%, rgba(6,7,10,0.64) 100%);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.05), 0 10px 40px rgba(0,0,0,0.45)">
+      <a href="Home.dc.html" style="display:flex;align-items:baseline;gap:14px;text-decoration:none;color:#F2F2F2">
+        <span style="font-family:Jura, sans-serif;font-size:15px;letter-spacing:0.22em">BENGALURU FROM ORBIT</span>
+        <span aria-hidden="true" style="width:6px;height:6px;border-radius:3px;background:#E9A15A"></span>
+      </a>
+      <nav aria-label="Primary" style="display:flex;gap:4px;flex-wrap:wrap">
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Layers</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">16 Systems</a>
+        <a href="Simulation.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Simulations</a>
+        <a href="Compare.dc.html" aria-current="page" style="padding:12px 14px;color:#7FE0F0;text-decoration:none;font-size:13px">Compare</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Data</a>
+        <a href="Home.dc.html" style="padding:12px 14px;color:#F2F2F2;text-decoration:none;font-size:13px">Pipeline</a>
+      </nav>
+      <button type="button" data-action="sound" aria-pressed="false" aria-label="Turn space sound on" style="height:44px;padding:0 18px;border-radius:22px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#F2F2F2;font-size:12px;display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span aria-hidden="true" style="display:flex;align-items:center;gap:2px;height:14px">
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqB"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqC"></span>
+          <span style="width:2px;height:14px;border-radius:1px;background:#E9A15A;animation:none" data-eq="eqA"></span>
+        </span><span data-bind="soundText">Sound off</span>
+      </button>
+    </div>
+  </header>
+
+<main class="cmp-page">
+
+  <div class="cmp-wrap cmp-intro cmp-reveal in">
+    <p class="cmp-eyebrow">Compare</p>
+    <h1><span class="a">THEN</span> AGAINST <span class="b">NOW</span></h1>
+    <p class="cmp-lede">The same place on the same colour scale, pulled apart in time. Pick a day in the past and set it beside the live conditions.</p>
+  </div>
+
+  <!-- 1 · Controls -->
+  <div class="cmp-wrap cmp-bar cmp-reveal in">
+    <div class="ts-menu" id="cmp-menu" style="--acc: rgb(154,202,198); --accrgb: 154,202,198;">
+      <button type="button" class="ts-menu-btn ts-ctl" id="cmp-menu-btn" aria-haspopup="true" aria-expanded="false" aria-controls="cmp-menu-list">
+        <span class="sw" id="cmp-menu-sw" aria-hidden="true" style="background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 45%), conic-gradient(from 210deg, rgb(91, 140, 255), rgb(127, 224, 240), rgb(224, 144, 90), rgb(244, 194, 124), rgb(69, 107, 200));"></span>
+        <span><span class="k">LAYER</span><span class="v" id="cmp-menu-current">Air temperature</span></span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9C9CE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+      <div class="ts-menu-list" id="cmp-menu-list" role="menu" aria-label="Map layer"><button type="button" class="ts-opt" role="menuitemradio" aria-checked="true" data-layer="air" style="--oc:rgb(154,202,198);--ocrgb:154,202,198"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(91,140,255),rgb(127,224,240),rgb(224,144,90),rgb(244,194,124),rgb(69,107,200))"></span><span class="n">Air temperature</span><span class="u">°C</span><span class="s">2 m above ground · ECMWF / ERA5</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="surf" style="--oc:rgb(208,142,111);--ocrgb:208,142,111"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(154,134,184),rgb(224,144,90),rgb(250,214,150),rgb(105,89,135))"></span><span class="n">Ground temperature</span><span class="u">°C</span><span class="s">Soil, 0–7 cm · ECMWF / ERA5-Land</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="rain" style="--oc:rgb(121,215,241);--ocrgb:121,215,241"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(47,107,255),rgb(127,224,240),rgb(230,250,255),rgb(40,88,210))"></span><span class="n">Rainfall · 30 days</span><span class="u">mm</span><span class="s">Daily totals summed</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="rh" style="--oc:rgb(120,200,225);--ocrgb:120,200,225"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(95,196,216),rgb(200,214,255),rgb(62,96,122))"></span><span class="n">Relative humidity</span><span class="u">%</span><span class="s">2 m above ground</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="wind" style="--oc:rgb(173,234,249);--ocrgb:173,234,249"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(127,224,240),rgb(200,240,255),rgb(255,255,255),rgb(94,147,190))"></span><span class="n">Wind speed</span><span class="u">m/s</span><span class="s">10 m above ground</span></button><button type="button" class="ts-opt" role="menuitemradio" aria-checked="false" data-layer="pm25" style="--oc:rgb(174,137,158);--ocrgb:174,137,158"><span class="sw" aria-hidden="true" style="background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 45%), conic-gradient(from 210deg, rgb(95,196,216),rgb(154,134,184),rgb(224,144,90),rgb(244,120,90),rgb(80,165,185))"></span><span class="n">PM2.5 air pollution</span><span class="u">µg/m³</span><span class="s">Fine particulates · Copernicus CAMS</span></button></div>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="Region">
+      <button type="button" data-region="ka" aria-pressed="true">Karnataka</button>
+      <button type="button" data-region="blr" aria-pressed="false">Bengaluru</button>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="Basemap">
+      <button type="button" data-basemap="day" aria-pressed="true">Day</button>
+      <button type="button" data-basemap="night" aria-pressed="false">Night</button>
+    </div>
+    <div class="ts-dn ts-ctl" role="group" aria-label="View">
+      <button type="button" data-mode="split" aria-pressed="true">Split view</button>
+      <button type="button" data-mode="all" aria-pressed="false">All 16 systems</button>
+    </div>
+  </div>
+
+  <div class="cmp-wrap cmp-when cmp-reveal in" aria-label="Choose the past day">
+    <span class="lbl">Left map</span>
+    <button type="button" class="cmp-chip" data-ago="1" aria-pressed="false">1 year ago</button>
+    <button type="button" class="cmp-chip" data-ago="5" aria-pressed="false">5 years</button>
+    <button type="button" class="cmp-chip" data-ago="10" aria-pressed="true">10 years</button>
+    <button type="button" class="cmp-chip" data-ago="20" aria-pressed="false">20 years</button>
+    <button type="button" class="cmp-chip" data-ago="40" aria-pressed="false">40 years</button>
+    <label class="ts-sr" for="cmp-date">Past date</label>
+    <input type="date" class="cmp-date" id="cmp-date" min="1980-01-01" max="2026-11-08" value="2016-11-15">
+    <span class="cmp-hint" id="cmp-hint">Drag the timeline: the left map shows that year on the same day and hour (1980 on); this year is live; later years add an IPCC warming scenario to today’s reading, for temperature only. Play steps by decades. PM2.5 records start in September 2022.</span>
+  </div>
+
+  <!-- 2 · The two moments -->
+  <div class="cmp-wrap cmp-split" id="cmp-split">
+    <div class="cmp-strip">
+      <span class="ts-live" id="cmp-live" data-state="error">Live data unavailable</span>
+      <span id="cmp-region-label">Karnataka · 191,791 km²</span>
+    </div>
+    <div class="cmp-grid" id="cmp-grid">
+      <figure class="cmp-pane past" id="pane-a">
+        <div class="cmp-frame" id="frame-a">
+          <div class="cmp-map leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" id="map-a" role="application" aria-label="Map of the past conditions" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 12; transform: translate3d(0px, 0px, 0px) scale(0.707107);"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon ts-beacon leaflet-zoom-animated" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(391px, 456px, 0px); z-index: 456;"></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(16498.4px, 10574.8px, 0px) scale(45.2548);"></div><div class="leaflet-pane leaflet-cut-pane" style="z-index: 450; pointer-events: none;"><svg pointer-events="none" class="leaflet-zoom-animated" width="744" height="691" viewBox="-62 -58 744 691" style="transform: translate3d(-62px, -58px, 0px);"><g><path stroke="#F2F2F2" stroke-opacity="0.85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M168 278L171 278L172 276L173 278L176 278L176 284L178 286L176 289L178 295L181 297L180 300L182 302L176 304L180 309L178 312L179 319L173 327L171 324L170 327L166 328L168 332L168 335L166 335L173 340L175 338L177 340L177 346L180 352L183 354L193 389L195 392L197 391L203 412L205 431L215 468L217 470L225 468L223 472L228 473L227 476L230 476L230 474L234 475L233 478L237 479L239 483L242 479L245 481L242 483L242 485L246 487L246 490L248 490L249 487L251 487L251 490L248 490L248 494L252 496L251 501L256 501L263 511L265 510L267 514L270 513L270 516L276 515L276 518L280 523L289 525L296 522L297 530L301 529L303 533L307 533L311 537L315 536L316 542L322 540L325 545L328 546L338 545L344 547L343 543L347 535L351 535L352 533L355 533L355 535L357 534L358 538L361 539L360 535L369 534L369 532L375 535L379 534L381 536L385 524L388 525L397 523L403 513L400 508L384 506L384 502L389 501L393 496L394 488L391 489L393 487L390 484L392 476L401 476L402 472L404 471L403 470L405 468L405 465L413 461L414 463L412 466L414 466L414 464L417 467L419 464L421 464L426 469L432 470L434 463L438 464L440 458L446 460L447 463L448 461L444 459L446 456L448 456L447 451L451 450L451 446L455 443L453 441L455 440L455 436L454 434L452 437L448 434L449 433L446 434L442 432L444 431L441 430L443 415L433 415L430 417L431 413L423 412L422 408L425 408L423 405L426 402L425 397L421 395L420 397L418 396L414 400L414 396L416 395L417 391L415 391L413 394L406 392L405 394L407 397L399 401L399 405L398 403L396 404L397 402L395 402L393 404L394 405L389 406L388 404L387 408L384 407L385 409L382 409L383 401L380 401L381 398L370 398L368 394L366 397L365 393L364 397L361 398L364 399L364 404L357 405L355 403L354 405L352 400L356 393L349 386L349 384L352 383L348 379L346 379L346 377L349 377L350 375L355 376L355 384L361 385L363 388L374 386L376 389L376 394L380 395L381 390L378 390L378 387L375 386L379 380L375 381L379 377L386 378L385 370L382 369L382 367L378 366L377 368L380 374L378 375L376 373L377 370L371 369L372 365L368 367L363 365L360 373L358 374L356 372L349 372L348 370L350 369L346 365L346 362L348 360L349 362L352 356L345 357L344 354L341 353L338 348L340 339L339 336L344 334L343 329L345 324L342 325L338 322L340 315L345 318L345 320L352 321L353 319L356 319L356 321L358 321L364 310L361 306L364 304L361 302L360 299L357 300L355 292L351 288L355 288L355 279L361 279L358 273L356 273L357 266L355 266L358 261L365 258L381 258L386 260L386 249L384 244L386 240L385 239L386 236L388 237L389 235L392 235L391 232L385 229L376 229L368 223L377 222L377 220L380 220L380 218L378 217L383 215L382 213L384 211L381 212L380 210L383 209L384 207L381 206L381 202L384 202L382 193L384 188L386 187L383 180L377 177L377 174L379 174L378 173L383 169L381 168L382 162L384 164L387 163L388 160L386 159L390 159L390 157L393 158L395 153L395 155L397 156L398 154L392 152L391 150L387 149L386 151L385 149L382 148L382 141L390 137L386 135L387 132L389 132L390 129L392 129L391 126L393 127L393 123L395 124L395 120L391 119L388 116L392 114L392 110L389 107L392 101L386 99L386 101L383 102L381 99L377 99L376 98L379 97L380 94L377 93L377 90L375 91L374 89L369 92L369 95L366 99L367 101L364 101L363 105L359 107L360 110L357 110L355 108L353 109L353 107L350 107L348 112L351 114L350 117L347 119L348 126L343 127L341 129L336 127L336 130L340 132L338 135L335 135L336 138L334 139L333 142L328 136L326 140L326 136L322 136L323 139L320 139L320 143L316 144L316 147L310 147L312 153L311 154L313 155L310 156L310 158L313 158L312 162L315 163L312 167L311 164L307 165L304 162L300 164L300 167L299 164L296 163L294 165L290 164L284 166L282 164L281 159L280 162L277 159L277 163L275 163L272 159L269 160L268 157L265 156L263 159L264 161L261 162L262 164L264 164L263 167L267 170L265 176L266 180L268 180L268 183L266 185L268 185L268 190L264 190L263 187L261 187L261 190L256 191L254 188L252 190L250 189L242 191L243 196L238 198L236 198L237 196L233 196L230 191L226 193L226 191L222 191L222 193L220 191L219 192L222 194L222 196L218 197L219 203L215 203L205 207L202 212L204 214L201 214L201 216L197 218L195 212L192 213L190 210L190 214L186 216L185 219L183 217L180 218L180 221L177 218L178 221L176 221L177 223L179 221L179 224L181 224L183 230L182 228L180 229L180 233L182 235L181 237L183 236L182 235L184 237L187 236L187 238L191 238L193 242L191 245L191 249L188 247L183 251L190 252L188 258L185 261L186 264L185 265L184 262L182 264L185 265L183 267L184 269L178 272L175 272L175 269L168 273L168 276L166 277z"></path></g></svg></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"></div></div></div>
+          
+          <div class="cmp-chiprow ts-ctl"><b id="chipk-a">PAST</b><span id="chip-a">—</span></div>
+          <div class="ts-tip" id="tip-a" aria-hidden="true"></div>
+          <div class="cmp-veil" id="veil-a"><span class="ts-ctl">That day could not be loaded. Try another date.</span></div>
+        </div>
+        <figcaption class="cmp-read" aria-live="polite">
+          <div class="cmp-k" id="k-a">Past</div>
+          <div class="cmp-big" id="v-a">—</div>
+          <div class="cmp-sub" id="s-a"></div>
+        </figcaption>
+      </figure>
+      <figure class="cmp-pane now" id="pane-b">
+        <div class="cmp-frame" id="frame-b">
+          <div class="cmp-map leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" id="map-b" role="application" aria-label="Map of the present conditions" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 12; transform: translate3d(0px, 0px, 0px) scale(0.707107);"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon ts-beacon leaflet-zoom-animated" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(391px, 456px, 0px); z-index: 456;"></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(16498.4px, 10574.8px, 0px) scale(45.2548);"></div><div class="leaflet-pane leaflet-cut-pane" style="z-index: 450; pointer-events: none;"><svg pointer-events="none" class="leaflet-zoom-animated" width="744" height="691" viewBox="-62 -58 744 691" style="transform: translate3d(-62px, -58px, 0px);"><g><path stroke="#F2F2F2" stroke-opacity="0.85" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M168 278L171 278L172 276L173 278L176 278L176 284L178 286L176 289L178 295L181 297L180 300L182 302L176 304L180 309L178 312L179 319L173 327L171 324L170 327L166 328L168 332L168 335L166 335L173 340L175 338L177 340L177 346L180 352L183 354L193 389L195 392L197 391L203 412L205 431L215 468L217 470L225 468L223 472L228 473L227 476L230 476L230 474L234 475L233 478L237 479L239 483L242 479L245 481L242 483L242 485L246 487L246 490L248 490L249 487L251 487L251 490L248 490L248 494L252 496L251 501L256 501L263 511L265 510L267 514L270 513L270 516L276 515L276 518L280 523L289 525L296 522L297 530L301 529L303 533L307 533L311 537L315 536L316 542L322 540L325 545L328 546L338 545L344 547L343 543L347 535L351 535L352 533L355 533L355 535L357 534L358 538L361 539L360 535L369 534L369 532L375 535L379 534L381 536L385 524L388 525L397 523L403 513L400 508L384 506L384 502L389 501L393 496L394 488L391 489L393 487L390 484L392 476L401 476L402 472L404 471L403 470L405 468L405 465L413 461L414 463L412 466L414 466L414 464L417 467L419 464L421 464L426 469L432 470L434 463L438 464L440 458L446 460L447 463L448 461L444 459L446 456L448 456L447 451L451 450L451 446L455 443L453 441L455 440L455 436L454 434L452 437L448 434L449 433L446 434L442 432L444 431L441 430L443 415L433 415L430 417L431 413L423 412L422 408L425 408L423 405L426 402L425 397L421 395L420 397L418 396L414 400L414 396L416 395L417 391L415 391L413 394L406 392L405 394L407 397L399 401L399 405L398 403L396 404L397 402L395 402L393 404L394 405L389 406L388 404L387 408L384 407L385 409L382 409L383 401L380 401L381 398L370 398L368 394L366 397L365 393L364 397L361 398L364 399L364 404L357 405L355 403L354 405L352 400L356 393L349 386L349 384L352 383L348 379L346 379L346 377L349 377L350 375L355 376L355 384L361 385L363 388L374 386L376 389L376 394L380 395L381 390L378 390L378 387L375 386L379 380L375 381L379 377L386 378L385 370L382 369L382 367L378 366L377 368L380 374L378 375L376 373L377 370L371 369L372 365L368 367L363 365L360 373L358 374L356 372L349 372L348 370L350 369L346 365L346 362L348 360L349 362L352 356L345 357L344 354L341 353L338 348L340 339L339 336L344 334L343 329L345 324L342 325L338 322L340 315L345 318L345 320L352 321L353 319L356 319L356 321L358 321L364 310L361 306L364 304L361 302L360 299L357 300L355 292L351 288L355 288L355 279L361 279L358 273L356 273L357 266L355 266L358 261L365 258L381 258L386 260L386 249L384 244L386 240L385 239L386 236L388 237L389 235L392 235L391 232L385 229L376 229L368 223L377 222L377 220L380 220L380 218L378 217L383 215L382 213L384 211L381 212L380 210L383 209L384 207L381 206L381 202L384 202L382 193L384 188L386 187L383 180L377 177L377 174L379 174L378 173L383 169L381 168L382 162L384 164L387 163L388 160L386 159L390 159L390 157L393 158L395 153L395 155L397 156L398 154L392 152L391 150L387 149L386 151L385 149L382 148L382 141L390 137L386 135L387 132L389 132L390 129L392 129L391 126L393 127L393 123L395 124L395 120L391 119L388 116L392 114L392 110L389 107L392 101L386 99L386 101L383 102L381 99L377 99L376 98L379 97L380 94L377 93L377 90L375 91L374 89L369 92L369 95L366 99L367 101L364 101L363 105L359 107L360 110L357 110L355 108L353 109L353 107L350 107L348 112L351 114L350 117L347 119L348 126L343 127L341 129L336 127L336 130L340 132L338 135L335 135L336 138L334 139L333 142L328 136L326 140L326 136L322 136L323 139L320 139L320 143L316 144L316 147L310 147L312 153L311 154L313 155L310 156L310 158L313 158L312 162L315 163L312 167L311 164L307 165L304 162L300 164L300 167L299 164L296 163L294 165L290 164L284 166L282 164L281 159L280 162L277 159L277 163L275 163L272 159L269 160L268 157L265 156L263 159L264 161L261 162L262 164L264 164L263 167L267 170L265 176L266 180L268 180L268 183L266 185L268 185L268 190L264 190L263 187L261 187L261 190L256 191L254 188L252 190L250 189L242 191L243 196L238 198L236 198L237 196L233 196L230 191L226 193L226 191L222 191L222 193L220 191L219 192L222 194L222 196L218 197L219 203L215 203L205 207L202 212L204 214L201 214L201 216L197 218L195 212L192 213L190 210L190 214L186 216L185 219L183 217L180 218L180 221L177 218L178 221L176 221L177 223L179 221L179 224L181 224L183 230L182 228L180 229L180 233L182 235L181 237L183 236L182 235L184 237L187 236L187 238L191 238L193 242L191 245L191 249L188 247L183 251L190 252L188 258L185 261L186 264L185 265L184 262L182 264L185 265L183 267L184 269L178 272L175 272L175 269L168 273L168 276L166 277z"></path></g></svg></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"></div></div></div>
+          
+          <div class="cmp-chiprow ts-ctl"><b>NOW</b><span id="chip-b">—</span></div>
+          <div class="ts-tip" id="tip-b" aria-hidden="true"></div>
+          <div class="cmp-veil" id="veil-b"><span class="ts-ctl">Live data unavailable</span></div>
+        </div>
+        <figcaption class="cmp-read" aria-live="polite">
+          <div class="cmp-k" id="k-b">Now</div>
+          <div class="cmp-big" id="v-b">—</div>
+          <div class="cmp-sub" id="s-b"></div>
+        </figcaption>
+      </figure>
+      <div class="cmp-time ts-ctl" id="cmp-time">
+        <button type="button" class="ts-tl-play" id="ts-tl-play" aria-label="Play timeline" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2F2F2" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"></path></svg></button>
+        <div class="ts-tl-year" id="ts-tl-year">2016</div>
+        <div class="ts-tl-slider-wrap">
+          <div class="ts-tl-rail">
+            <div class="ts-tl-track"></div>
+            <div class="ts-tl-rec" id="ts-tl-rec" aria-hidden="true" style="width: 38.3333%;"></div>
+            <div class="ts-tl-fill" id="ts-tl-fill" style="width:30%"></div>
+            <div class="ts-tl-now" id="ts-tl-now" style="left: 38.3333%;" aria-hidden="true"></div>
+            <input type="range" class="ts-tl-slider" id="ts-tl-slider" min="1980" max="2100" value="2016" aria-label="Year for the left map: 1980 to the year before now is the record, this year is live, later years are warming scenarios">
+          </div>
+          <div class="ts-tl-marks" aria-hidden="true">
+            <span style="left:0">1980 · RECORD</span>
+            <span class="now" id="ts-tl-livemark" style="left: 38.3333%;">LIVE</span>
+            <span style="left:58.3%">2050</span>
+            <span style="left:100%">2100</span>
+          </div>
+        </div>
+        <div class="ts-scen off" id="ts-scen" role="group" aria-label="Emissions scenario">
+          <button type="button" data-scen="ssp126" aria-pressed="false" title="SSP1-2.6">Low emissions</button>
+          <button type="button" data-scen="ssp245" aria-pressed="true" title="SSP2-4.5">Middle road</button>
+          <button type="button" data-scen="ssp585" aria-pressed="false" title="SSP5-8.5">High emissions</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · What changed -->
+    <div class="cmp-delta">
+      <div>
+        <p class="cmp-eyebrow" style="font-size:12px;letter-spacing:0.3em">What changed</p>
+        <h2 id="cmp-change">—</h2>
+        <p id="cmp-change-note"></p>
+      </div>
+      <div class="ts-legend" aria-hidden="true">
+        <div class="lbl" id="ts-legend-label">Air temperature (°C)</div>
+        <div class="bar" id="ts-legend-bar" style="background: linear-gradient(90deg, rgb(24, 40, 90) 0%, rgb(91, 140, 255) 30%, rgb(127, 224, 240) 55%, rgb(224, 144, 90) 80%, rgb(244, 194, 124) 100%);"></div>
+        <div class="rng"><span id="ts-legend-min">14.0 °C</span><span id="ts-legend-max">38.0 °C</span></div>
+        <div class="fx">Colour and contour lines show temperature. The same colour scale on both sides.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional · every system at once -->
+  <div class="cmp-wrap cmp-all" id="cmp-all" hidden="">
+    <div class="cmp-strip">
+      <span>All 16 systems · past <b style="color:#E9A15A;font-weight:400" id="all-past">—</b> against now</span>
+      <span id="all-note">Static snapshot</span>
+    </div>
+    <div class="cmp-all-grid" id="cmp-all-grid"><div class="cmp-tile" id="tile-1"><h3><i>01</i>Temperature</h3>
+        <div class="pair"></div>
+        <div class="cap"><span class="p">PAST <b id="tv-1-a">—</b></span><span class="n">NOW <b id="tv-1-b">—</b></span></div>
+        <div class="chg" id="tg-1"></div><div class="lyr"><button type="button" data-sys="1" data-lk="air" aria-pressed="false">Air</button><button type="button" data-sys="1" data-lk="surf" aria-pressed="false">Ground</button></div></div><div class="cmp-tile" id="tile-2"><h3><i>02</i>Precipitation &amp; Water</h3>
+        <div class="pair"></div>
+        <div class="cap"><span class="p">PAST <b id="tv-2-a">—</b></span><span class="n">NOW <b id="tv-2-b">—</b></span></div>
+        <div class="chg" id="tg-2"></div></div><div class="cmp-tile off"><h3><i>03</i>Extreme Weather</h3><div class="none"><b>Not connected yet</b>Needs IMD / NASA event records.</div></div><div class="cmp-tile" id="tile-4"><h3><i>04</i>Atmospheric Activity</h3>
+        <div class="pair"></div>
+        <div class="cap"><span class="p">PAST <b id="tv-4-a">—</b></span><span class="n">NOW <b id="tv-4-b">—</b></span></div>
+        <div class="chg" id="tg-4"></div><div class="lyr"><button type="button" data-sys="4" data-lk="rh" aria-pressed="false">Relative humidity</button><button type="button" data-sys="4" data-lk="wind" aria-pressed="false">Wind speed</button></div></div><div class="cmp-tile off"><h3><i>05</i>Ocean Systems</h3><div class="none"><b>Not connected yet</b>Needs Argo floats · OSCAR · Sentinel-6.</div></div><div class="cmp-tile off"><h3><i>06</i>Vegetation &amp; Greenery</h3><div class="none"><b>Not connected yet</b>Needs MODIS / Sentinel-2 NDVI.</div></div><div class="cmp-tile off"><h3><i>07</i>Land &amp; Soil</h3><div class="none"><b>Not connected yet</b>Needs SRTM · ESA WorldCover.</div></div><div class="cmp-tile off"><h3><i>08</i>Wildfires</h3><div class="none"><b>Not connected yet</b>Needs VIIRS 375 m active fires.</div></div><div class="cmp-tile off"><h3><i>09</i>Cryosphere</h3><div class="none"><b>Not connected yet</b>Needs MODIS snow and glacier products.</div></div><div class="cmp-tile off"><h3><i>10</i>Solar &amp; Space Activity</h3><div class="none"><b>Not connected yet</b>Needs NOAA SWPC · GOES.</div></div><div class="cmp-tile" id="tile-11"><h3><i>11</i>Air Quality</h3>
+        <div class="pair"></div>
+        <div class="cap"><span class="p">PAST <b id="tv-11-a">—</b></span><span class="n">NOW <b id="tv-11-b">—</b></span></div>
+        <div class="chg" id="tg-11"></div></div><div class="cmp-tile off"><h3><i>12</i>Carbon &amp; Ecosystems</h3><div class="none"><b>Not connected yet</b>Needs MODIS GPP / NPP · OCO-2.</div></div><div class="cmp-tile off"><h3><i>13</i>Geological Activity</h3><div class="none"><b>Not connected yet</b>Needs USGS · GSI seismic catalogues.</div></div><div class="cmp-tile off"><h3><i>14</i>Human Impact</h3><div class="none"><b>Not connected yet</b>Needs VIIRS night lights · WorldPop.</div></div><div class="cmp-tile off"><h3><i>15</i>Derived Intelligence</h3><div class="none"><b>Not connected yet</b>Will be built from the layers above, once more of them are connected.</div></div><div class="cmp-tile off"><h3><i>16</i>Predictions &amp; Simulations</h3><div class="none"><b>Forecast engine</b>This one looks forward, not back. <a href="Main.dc.html">Open future predictions →</a></div></div></div>
+  </div>
+
+  <!-- 4 · Every layer -->
+  <div class="cmp-wrap cmp-table-wrap cmp-reveal in">
+    <p class="cmp-eyebrow" style="font-size:12px;letter-spacing:0.3em">Every layer</p>
+    <table class="cmp-table">
+      <caption class="ts-sr">Region average of each layer, past and present</caption>
+      <thead><tr><th scope="col">Layer</th><th scope="col" class="past" id="th-past">Past</th><th scope="col" class="now">Now</th><th scope="col">Change</th></tr></thead>
+      <tbody id="cmp-tbody"><tr class="cur"><td>Air temperature</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr><tr class=""><td>Ground temperature</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr><tr class=""><td>Rainfall · 30 days</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr><tr class=""><td>Relative humidity</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr><tr class=""><td>Wind speed</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr><tr class=""><td>PM2.5 air pollution</td><td class="na">No record</td><td class="na">—</td><td class="na">—</td></tr></tbody>
+    </table>
+    <p>Averages over the whole area shown. Past values: ERA5 reanalysis (Open-Meteo archive); present values: live ECMWF / GFS models, and Copernicus CAMS for PM2.5. Ground temperature is the 0–7 cm soil layer on both sides. Rainfall is the total over the 30 days before each date. Boundary: geoBoundaries (DataMeet / Election Commission of India, CC BY 2.5 IN). Night basemap: NASA Black Marble (VIIRS). Day basemap: Esri, Maxar, Earthstar Geographics.</p>
+  </div>
+
+  <section id="honest" aria-labelledby="honestTitle">
+  <div style="max-width:1320px;margin:0 auto;padding:80px 32px 120px;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(420px, 100%), 1fr));gap:48px;align-items:center">
+    <div>
+      <p style="margin:0;font-family:Jura, sans-serif;font-size:14px;letter-spacing:0.36em;color:#7FE0F0">HONEST DATA</p>
+      <h2 id="honestTitle" style="margin:14px 0 0;font-family:Jura, sans-serif;font-weight:300;font-size:clamp(40px, 5.2vw, 64px);letter-spacing:0.05em;line-height:1">TWO TEMPERATURES.<br/>NEVER MIXED.</h2>
+      <p style="margin:26px 0 0;max-width:480px;font-size:15px;line-height:1.75;color:#B4B4BC;text-wrap:pretty">Air temperature is measured two metres above the ground. Land surface temperature is how hot the ground itself gets — roofs, roads, and open soils. They tell different stories, so they always appear as separate physical series.</p>
+    </div>
+    <div style="padding:28px;border-radius:24px;border:1px solid rgba(255,255,255,0.08);background:#050506">
+      <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:#C9C9CE">
+        <span style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="width:18px;height:3px;border-radius:2px;background:linear-gradient(90deg,#5B8CFF,#7FE0F0)"></span>Air temperature · 2 m</span>
+        <span style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="width:18px;height:3px;border-radius:2px;background:linear-gradient(90deg,#9A86B8,#E0905A)"></span>Land surface temperature</span>
+        <span style="margin-left:auto;font-size:10px;letter-spacing:0.1em;color:#E9A15A">SAMPLE VALUES</span>
+      </div>
+      <svg role="img" aria-label="Monthly air and land surface temperature, sample values" viewBox="0 0 560 240" style="width:100%;height:auto;margin-top:16px">
+        <defs>
+          <linearGradient id="gA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5B8CFF"></stop><stop offset="1" stop-color="#7FE0F0"></stop></linearGradient>
+          <linearGradient id="gL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9A86B8"></stop><stop offset="1" stop-color="#E0905A"></stop></linearGradient>
+          <linearGradient id="gLf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A86B8" stop-opacity="0.25"></stop><stop offset="1" stop-color="#9A86B8" stop-opacity="0"></stop></linearGradient>
+        </defs>
+        <path d="M24 24H540M24 84H540M24 144H540M24 204H540" stroke="#141418"></path>
+        <path d="M24.0 104.0 L70.5 80.0 L117.1 56.0 L163.6 48.0 L210.2 72.0 L256.7 112.0 L303.3 128.0 L349.8 128.0 L396.4 120.0 L442.9 120.0 L489.5 128.0 L536.0 120.0 L536.0 216 L24.0 216 Z" fill="url(#gLf)"></path>
+        <path d="M24.0 104.0 L70.5 80.0 L117.1 56.0 L163.6 48.0 L210.2 72.0 L256.7 112.0 L303.3 128.0 L349.8 128.0 L396.4 120.0 L442.9 120.0 L489.5 128.0 L536.0 120.0" stroke="url(#gL)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M24.0 168.0 L70.5 152.0 L117.1 136.0 L163.6 128.0 L210.2 136.0 L256.7 152.0 L303.3 160.0 L349.8 160.0 L396.4 160.0 L442.9 160.0 L489.5 168.0 L536.0 176.0" stroke="url(#gA)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <div style="display:flex;justify-content:space-between;padding:0 2% 0 4%;font-size:11px;color:#A0A0A8">
+        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <div class="cmp-foot" style="padding-top:0"></div>
+</main>
+
+<footer class="sp-footer">
+      <span>Bengaluru From Orbit · Planetary &amp; Regional Environmental Engine</span>
+      <span>NASA POWER, MODIS, GPM · Open-Meteo · ECMWF · IPCC AR6</span>
+      <nav aria-label="Footer"><a href="Home.dc.html">Layers</a><a href="Home.dc.html">16 Systems</a><a href="Simulation.dc.html">Simulations</a><a href="Compare.dc.html">Compare</a><a href="Main.dc.html">Predictions</a><a href="Home.dc.html">Data</a></nav>
+    </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3052}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -173,6 +173,24 @@ class SupabaseREST:
     def insert_observations(self, rows: list[dict], *, skip_existing: bool = True) -> dict[str, int]:
         if not rows:
             return {"attempted": 0, "inserted": 0, "skipped": 0}
+        # Enforce NASA GES DISC exclusivity on every write path
+        from pipeline.source_policy import (
+            PROHIBITED_DATASET_CODES,
+            SourcePolicyError,
+            assert_metadata_ges_disc,
+            require_nasa_collection,
+        )
+
+        maps = self.lookup_maps()
+        code_by_id = {v: k for k, v in maps["dataset_by_code"].items()}
+        for r in rows:
+            code = code_by_id.get(r.get("dataset_id"), "")
+            if code in PROHIBITED_DATASET_CODES:
+                raise SourcePolicyError(f"Refusing insert for prohibited dataset {code}")
+            meta = r.get("metadata") or {}
+            assert_metadata_ges_disc(meta)
+            require_nasa_collection(meta)
+
         skipped = 0
         if skip_existing:
             existing = self.existing_source_record_ids(

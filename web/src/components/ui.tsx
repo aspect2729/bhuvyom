@@ -41,7 +41,7 @@ export function RangeSlider({ id, label, display, value, onChange, todayPct, dis
 export function Footer({ links, credit = true }: { links: { label: string; to: string }[]; credit?: boolean }) {
   return (
     <footer className="flex flex-wrap justify-between gap-6 border-t border-white/[.08] pt-7 text-[12px] text-ink-4">
-      <span>Bengaluru From Orbit · NASA Hackathon project</span>
+      <span>BhuVyom · NASA Hackathon project</span>
       {credit && <span>Earth imagery: NASA Blue Marble, Black Marble and cloud composite · Data: NASA POWER, MODIS, GPM IMERG, SRTM, NEX-GDDP-CMIP6 · Map © OpenStreetMap, CARTO</span>}
       <nav aria-label="Footer" className="flex flex-wrap gap-[18px]">
         {links.map((l) => (l.to.startsWith('#') ? <a key={l.label} href={l.to} className="text-ink-2">{l.label}</a> : <Link key={l.label} to={l.to} className="text-ink-2">{l.label}</Link>))}
