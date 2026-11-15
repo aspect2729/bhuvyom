@@ -705,7 +705,7 @@
   let started = false;
   function start() {
     if (started) return; started = true;
-    basemap = (HOUR >= 18 || HOUR < 6) ? 'night' : 'day';
+    basemap = 'day';   // always open on the day basemap; Night stays one click away
     initMaps();
     setTimeout(() => { NA = makeNoise(7, 6); NB = makeNoise(19, 5); loadBoth(); }, 30);
   }

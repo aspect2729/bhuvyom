@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Motion: hide the first-screen elements until GSAP animates them in. Skipped for reduced motion; everything shows anyway if js/motion.js never runs. */(function(d){if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('gsap-on');setTimeout(function(){if(!window.__motionReady)d.classList.remove('gsap-on')},3000)})(document.documentElement);</script>
+<style>html.gsap-on header > div, html.gsap-on #top > div:first-child > div > *, html.gsap-on #top > div:last-child { visibility: hidden; }</style>
 <title>Future predictions — Bengaluru From Orbit</title>
 <meta name="description" content="12-month forecasts of air temperature and rainfall from the BhuVyom prediction engine, with prediction ranges and tested skill.">
 <link rel="stylesheet" href="css/fonts.css">
@@ -159,5 +161,10 @@
 <script src="js/subpage.js"></script>
 <script src="data/prediction/engine-results.js"></script>
 <script src="js/predictions.js"></script>
+<!-- Motion: Lenis smooth scrolling + GSAP / ScrollTrigger (vendored, work offline) -->
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/lenis.min.js"></script>
+<script src="js/motion.js"></script>
 </body>
 </html>

@@ -812,7 +812,7 @@
 
   // ─── INIT ───
   playBtn.innerHTML = PLAY;
-  basemap = (istHour() >= 18 || istHour() < 6) ? 'night' : 'day';   // match the real sky over Bengaluru
+  basemap = 'day';   // always open on the day basemap; Night stays one click away
   setBasemap(basemap);
   renderMenu(); renderLegend(); renderDetail(); render();
 
